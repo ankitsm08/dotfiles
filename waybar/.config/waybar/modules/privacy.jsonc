@@ -1,0 +1,43 @@
+{
+  "privacy": {
+    "icon-spacing": 4,
+    "icon-size": 13,
+    "transition-duration": 250,
+    "modules": [
+      {
+        "type": "screenshare",
+        "tooltip": true,
+        "tooltip-icon-size": 16
+      },
+      {
+        "type": "audio-out",
+        "tooltip": true,
+        "tooltip-icon-size": 16
+      },
+      {
+        "type": "audio-in",
+        "tooltip": true,
+        "tooltip-icon-size": 16
+      }
+    ],
+    "ignore-monitor": true,
+    "ignore": [
+      {
+        "type": "audio-in",
+        "name": "cava"
+      },
+      {
+        "type": "audio-out",
+        "name": "pipeWire alsa .*"
+      },
+      {
+        "type": "screenshare",
+        "name": "obs"
+      },
+      {
+        "type": "audio-in",
+        "name": "obs"
+      }
+    ]
+  }
+}

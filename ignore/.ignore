@@ -1,0 +1,59 @@
+# games
+!games/*
+games/*/*
+games/prefix
+Games/umu
+.steam
+.renpy
+
+# dev
+.android
+.bundle
+.rustup
+.cargo
+.codeium
+.vscode-oss
+.dart-tool
+.npm
+go
+gems
+
+# local and cache
+.cache
+*[Cc]ache*
+.local/share
+.local/state
+
+# browsers
+!.config/mozilla/firefox/*
+.config/mozilla/firefox/*/*
+!.config/zen/*
+.config/zen/*/*
+!.config/BraveSoftware/*
+.config/BraveSoftware/*/*
+
+# mozilla
+.mozilla
+.thunderbird
+
+# utils
+.pub-cache
+.pki
+
+# misc
+.var
+.winboat
+.zcompcache
+
+# homelab
+!homelab/*/*
+homelab/*/*/*
+
+# dotfiles
+!.config
+!.local/bin
+!.zshrc
+!.zprofile
+!.profile
+!.bash_*
+!.gitconfig

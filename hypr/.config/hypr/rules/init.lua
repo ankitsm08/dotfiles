@@ -1,0 +1,6 @@
+require("rules.bitwarden")
+require("rules.floating")
+require("rules.localsend")
+require("rules.pip")
+require("rules.webcam")
+require("rules.games")

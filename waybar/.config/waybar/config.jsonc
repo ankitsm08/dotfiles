@@ -1,0 +1,83 @@
+// -*- mode: jsonc -*-
+[
+  {
+    "include": [
+      "~/.config/waybar/common.jsonc",
+      "~/.config/waybar/modules/*.jsonc",
+      "~/.config/waybar/modules/**/*.jsonc"
+    ],
+    "output": "eDP-1",
+    "modules-left": [
+      "custom/launcher",
+      "hyprland/workspaces",
+      "hyprland/window",
+      "hyprland/submap"
+    ],
+    "modules-center": [
+      "custom/media_music",
+      "custom/media_browser",
+      "custom/server-status",
+      "custom/auto-cpufreq",
+      "clock",
+      "wireplumber#source",
+      "custom/screenrec",
+      "custom/voxtype",
+      "privacy",
+      "idle_inhibitor"
+    ],
+    "modules-right": [
+      "bluetooth",
+      "network",
+      "cpu",
+      "memory#small",
+      "disk",
+      "temperature",
+      "battery",
+      "backlight",
+      "wireplumber#sink",
+      "group/tray-expander",
+      "custom/notification",
+      "custom/power"
+    ]
+  },
+  {
+    "include": [
+      "~/.config/waybar/common.jsonc",
+      "~/.config/waybar/modules/*.jsonc",
+      "~/.config/waybar/modules/**/*.jsonc"
+    ],
+    "output": "HDMI-A-1",
+    "modules-left": [
+      "custom/launcher",
+      "hyprland/workspaces",
+      "hyprland/window",
+      "hyprland/submap"
+    ],
+    "modules-center": [
+      "custom/media_music",
+      "custom/media_browser",
+      "custom/server-status",
+      "custom/auto-cpufreq",
+      "clock",
+      "wireplumber#source",
+      "custom/screenrec",
+      "custom/voxtype",
+      "privacy",
+      "idle_inhibitor"
+    ],
+    "modules-right": [
+      "bluetooth",
+      "network",
+      "cpu",
+      "memory#big",
+      "disk",
+      "temperature",
+      // "battery",
+      "custom/brightness",
+      "wireplumber#sink",
+      "group/tray-expander",
+      "custom/notification",
+      "custom/power"
+    ]
+  }
+]

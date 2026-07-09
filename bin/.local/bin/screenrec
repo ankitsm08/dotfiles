@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+RECORD_DIR="$HOME/videos/rec"
+WAYBAR_SIGNAL=9
+
+mkdir -p "$RECORD_DIR"
+
+status() {
+  if pgrep -x "wl-screenrec" >/dev/null; then
+    echo '{"alt": "recording", "tooltip": "Recording Active. Click to stop.", "class": "recording"}'
+  else
+    echo '{"alt": "stopped", "tooltip": "Not Recording", "class": "stopped"}'
+  fi
+}
+
+toggle() {
+  if pgrep -x "wl-screenrec" >/dev/null; then
+    pkill -INT -x wl-screenrec
+    paplay /usr/share/sounds/freedesktop/stereo/message.oga &
+    notify-send -u normal "Screen Recording" "Recording stopped and saved to $RECORD_DIR" -i media-record -e -t 3000
+  else
+    MONITOR=$(hyprctl monitors -j | jq -r '.[] | select(.focused) | .name')
+    FILENAME="$RECORD_DIR/rec_${MONITOR}_$(date +%Y-%m-%d_%H-%M-%S).mp4"
+
+    wl_args=(-o "$MONITOR" -f "$FILENAME" --codec hevc)
+
+    if [[ "$1" == "--audio" ]]; then
+      wl_args+=(--audio)
+    elif [[ "$1" == "--audio-device" ]]; then
+      AUDIO_MONITOR=$(pactl info | awk -F': ' '/Default Sink/ {print $2 ".monitor"}')
+      wl_args+=(--audio-device "$AUDIO_MONITOR")
+    fi
+
+    paplay /usr/share/sounds/freedesktop/stereo/window-attention.oga &
+    wl-screenrec "${wl_args[@]}" &
+  fi
+
+  sleep 0.2
+  pkill -RTMIN+${WAYBAR_SIGNAL} waybar
+}
+
+case "$1" in
+  status)
+    status
+    ;;
+  toggle)
+    toggle
+    ;;
+  *)
+    echo "Usage: $0 {status|toggle}"
+    exit 1
+    ;;
+esac

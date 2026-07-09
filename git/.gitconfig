@@ -1,0 +1,94 @@
+[user]
+  name = Ankit Sharma
+  email = ankitsm08@gmail.com
+  signingkey = E4E35DA9C7EAAC457A87C9F4CD0A8A64081726F4  # gitleaks:allow
+
+[init]
+  defaultBranch = main
+
+[core]
+  compression = 9
+  pager = delta
+  editor = nvim
+  preloadindex = true
+  autocrlf = input
+
+[advice]
+  statusHints = false
+
+[interactive]
+  diffFilter = delta --color-only
+  singlekey = true
+  singlekey = true
+
+[show]
+  branch = true
+  showStash = true
+  showUntrackedFiles = true
+  diffAlgorithm = histogram
+
+[diff]
+  renames = true
+  renamesLimit = 999
+  interHunkContext = 10
+  colorMoved = zebra
+  algorithm = histogram
+  colorMovedWS = allow-indentation-change
+
+[delta]
+  navigate = true  # use n and N to move between diff sections
+  side-by-side = false
+  line-numbers = true
+  decorations = true
+  keep-plus-minus-markers = false
+
+  dark = true
+  syntax-theme = Catppuccin Mocha
+
+[merge]
+  conflictStyle = zdiff3
+  tool = nvimdiff
+
+[commit]
+  gpgsign = true
+
+[push]
+  autoSetupRemote = true
+  default = current
+
+[pull]
+  default = current
+  rebase = true
+
+[log]
+  abbrevCommit = true
+
+[rebase]
+  autoStash = true
+
+[branch]
+  sort = -committerdate
+
+[tag]
+  gpgsign = true
+  sort = -taggerdate
+
+[alias]
+  cd = "!f() { d=\"$1\"; shift; GIT_AUTHOR_DATE=\"$d\" GIT_COMMITTER_DATE=\"$d\" git commit --date=\"$d\" \"$@\"; }; f"
+
+[credential]
+  credentialStore = secretservice
+  helper = 
+  helper = libsecret
+  helper = oauth
+[credential "https://github.com"]
+  username = ankitsm08
+[credential "https://gitlab.com"]
+  username = ankitsm08
+[credential "https://fj.anklab.mywire.org"]
+  username = ankitsm08
+  oauthClientId = a4792ccc-144e-407e-86c9-5e7d8d9c3269  # gitleaks:allow
+  oauthScopes = "read_repository write_repository"
+  oauthAuthURL = /login/oauth/authorize
+  oauthTokenURL = /login/oauth/access_token
+  oauthDeviceAuthURL = /login/oauth/authorize_device

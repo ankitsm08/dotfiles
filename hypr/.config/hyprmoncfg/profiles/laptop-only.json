@@ -1,0 +1,105 @@
+{
+  "name": "laptop-only",
+  "created_at": "2026-05-30T00:27:49.383854192Z",
+  "updated_at": "2026-05-30T00:30:03.915410701Z",
+  "outputs": [
+    {
+      "key": "au optronics|0x369f",
+      "match_key": "au optronics|0x369f",
+      "name": "eDP-1",
+      "make": "AU Optronics",
+      "model": "0x369F",
+      "enabled": true,
+      "mode": "1920x1080@60.04Hz",
+      "width": 1920,
+      "height": 1080,
+      "refresh": 60.04,
+      "x": 0,
+      "y": 0,
+      "scale": 1,
+      "vrr": 1,
+      "transform": 0,
+      "bitdepth": 8,
+      "cm": "srgb",
+      "sdr_brightness": 1,
+      "sdr_saturation": 1,
+      "sdr_min_luminance": 0.2,
+      "sdr_max_luminance": 80,
+      "min_luminance": 0
+    }
+  ],
+  "workspaces": {
+    "enabled": true,
+    "strategy": "manual",
+    "max_workspaces": 9,
+    "group_size": 3,
+    "monitor_order": [
+      "au optronics|0x369f"
+    ],
+    "rules": [
+      {
+        "workspace": "1",
+        "output_key": "au optronics|0x369f",
+        "output_name": "eDP-1",
+        "default": true,
+        "persistent": true
+      },
+      {
+        "workspace": "2",
+        "output_key": "au optronics|0x369f",
+        "output_name": "eDP-1",
+        "persistent": true
+      },
+      {
+        "workspace": "3",
+        "output_key": "au optronics|0x369f",
+        "output_name": "eDP-1",
+        "persistent": true
+      },
+      {
+        "workspace": "4",
+        "output_key": "au optronics|0x369f",
+        "output_name": "eDP-1",
+        "persistent": true
+      },
+      {
+        "workspace": "5",
+        "output_key": "au optronics|0x369f",
+        "output_name": "eDP-1",
+        "persistent": true
+      },
+      {
+        "workspace": "6",
+        "output_key": "au optronics|0x369f",
+        "output_name": "eDP-1",
+        "persistent": true
+      },
+      {
+        "workspace": "7",
+        "output_key": "au optronics|0x369f",
+        "output_name": "eDP-1",
+        "default": true,
+        "persistent": true
+      },
+      {
+        "workspace": "8",
+        "output_key": "au optronics|0x369f",
+        "output_name": "eDP-1",
+        "persistent": true
+      },
+      {
+        "workspace": "9",
+        "output_key": "au optronics|0x369f",
+        "output_name": "eDP-1",
+        "persistent": true
+      },
+      {
+        "workspace": "10",
+        "output_key": "au optronics|0x369f",
+        "output_name": "eDP-1",
+        "persistent": true
+      }
+    ]
+  },
+  "exec": ""
+}

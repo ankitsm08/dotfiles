@@ -1,0 +1,17 @@
+# path_add DIR [before|after]
+path-add() {
+  [ -d "$1" ] || return 0
+
+  case ":$PATH:" in
+    *":$1:"*) return 0 ;;
+  esac
+
+  if [ "$2" = "after" ]; then
+    PATH="$PATH:$1"
+  else
+    PATH="$1:$PATH"
+  fi
+
+  export PATH
+}
+

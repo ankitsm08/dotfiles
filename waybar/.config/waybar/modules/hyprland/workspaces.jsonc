@@ -1,0 +1,30 @@
+{
+  "hyprland/workspaces": {
+    "format": "{name}: {icon}{windows}",
+    "format-icons": {
+      "1": "",
+      "2": "",
+      "3": "",
+      "4": "󰂺",
+      "5": "",
+      "6": "",
+      "7": "",
+      "8": "",
+      "9": "",
+      "10": "",
+      "default": ""
+    },
+    "show-special": false,
+    "special-visible-only": false,
+    "on-scroll-down": "hyprctl dispatch \"hl.dsp.focus({workspace = 'e+1'})\"",
+    "on-scroll-up": "hyprctl dispatch \"hl.dsp.focus({workspace = 'e-1'})\"",
+    "format-window-separator": "",
+    "workspace-taskbar": {
+      "enable": false,
+      "update-active-window": true,
+      "format": " {icon}",
+      "icon-size": 16,
+      "on-click-window": "~/.config/waybar/scripts/focus-window.sh {address} {button}"
+    }
+  }
+}

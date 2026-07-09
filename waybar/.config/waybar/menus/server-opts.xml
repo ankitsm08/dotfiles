@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <object class="GtkMenu" id="menu">
+    <child>
+      <object class="GtkMenuItem" id="dashboard">
+        <property name="label">Anklab Dashboard</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="control">
+        <property name="label">Control Center</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="logs">
+        <property name="label">Perf and Logs</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="delimiter1"/>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="git">
+        <property name="label">Git VM Server</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="notifications">
+        <property name="label">Notification Server</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="passwords">
+        <property name="label">Password Vault</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="documents">
+        <property name="label">Document Manager</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="delimiter2"/>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="tailscale">
+        <property name="label">Tailscale VPN</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="restart-tailscale">
+        <property name="label">Restart Tailscale</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="localhost">
+        <property name="label">Local Control Center</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="restart">
+        <property name="label">Restart Docker</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="stop">
+        <property name="label">Stop Docker</property>
+      </object>
+    </child>
+  </object>
+</interface>
+

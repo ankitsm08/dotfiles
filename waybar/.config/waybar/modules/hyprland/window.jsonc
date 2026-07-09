@@ -1,0 +1,11 @@
+{
+  "hyprland/window": {
+    "separate-outputs": true,
+    "format": "❯ {}",
+    "rewrite": {
+      "(.*).....Firefox .*": " $1",
+      "(.*).....Zen .*": " $1"
+    },
+    "max-length": 50
+  }
+}

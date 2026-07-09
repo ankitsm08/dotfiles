@@ -1,0 +1,9 @@
+{
+  "custom/launcher": {
+    "format": "",
+    "on-click": "rofi -show drun",
+    "tooltip-format": "Arch btw!",
+    "tooltip": true,
+    "on-click-right": "foot --app-id=TUI.float -H -e zsh -c \"sleep 0.05; fastfetch\""
+  }
+}

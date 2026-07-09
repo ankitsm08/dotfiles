@@ -1,0 +1,19 @@
+{
+  "cpu": {
+    "interval": 2,
+    "format": "{usage}% ",
+    "format-alt": "{icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7} ",
+    "tooltip": true,
+    "format-icons": [
+      "<span color='#a6e3a1'>▁</span>", // green
+      "<span color='#94e2d5'>▂</span>", // teal
+      "<span color='#74c7ec'>▃</span>", // sapphire
+      "<span color='#b4befe'>▄</span>", // lavender
+      "<span color='#f5e0dc'>▅</span>", // rosewater
+      "<span color='#ffffa5'>▆</span>", // yellow
+      "<span color='#f5c2e7'>▇</span>", // pink
+      "<span color='#dd532e'>█</span>" // red
+    ],
+    "on-click-middle": "foot --app-id=TUI.float -e btop"
+  }
+}

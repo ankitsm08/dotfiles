@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+
+trap 'tput cnorm; echo -e "\nAuto-clicker stopped. Exiting cleanly..."; exit 0' INT TERM
+
+for cmd in hyprctl jq fzf awk; do
+  if ! command -v "$cmd" &> /dev/null; then
+    echo " Error: '$cmd' is not installed."
+    exit 1
+  fi
+done
+
+FZF_OPTS="--layout=reverse --border=rounded --margin=1,3 --padding=1"
+
+clear
+
+WINDOW_HEADER=" ADDRESS        |  CLASS -  TITLE"
+SELECTION=$(hyprctl clients -j | jq -r '.[] | select(.class != "") | "\(.address)  |  \(.class) -  \(.title)"' | \
+  fzf $FZF_OPTS --prompt="  Select Window ❯ " --header="$WINDOW_HEADER")
+
+if [ -z "$SELECTION" ]; then
+  echo -e " No window selected. Aborting."
+  exit 1
+fi
+
+WINDOW_ADDRESS=$(echo "$SELECTION" | awk '{print $1}')
+WINDOW_CLASS=$(echo "$SELECTION" | awk -F' [|] ' '{print $2}' | awk '{print $1}')
+
+ACTION_CHOICE=$(printf "󰍽 Left Click\n󰍽 Right Click\n󰍽 Middle Click\n  Custom Keypress" | \
+  fzf $FZF_OPTS --prompt="⚡ Select Action ❯ ")
+
+case "$ACTION_CHOICE" in
+  "󰍽 Left Click")
+    MODS=""
+    KEY="mouse:272"
+    ;;
+  "󰍽 Right Click")
+    MODS=""
+    KEY="mouse:273"
+    ;;
+  "󰍽 Middle Click")
+    MODS=""
+    KEY="mouse:274"
+    ;;
+  "  Custom Keypress")
+    echo -e "Example keys: space, w, Return, Escape"
+    read -p "Enter key: " KEY
+    if [ -z "$KEY" ]; then
+      echo "Error: Key cannot be empty."
+      exit 1
+    fi
+
+    echo "Example modifiers: SHIFT, CTRL, ALT (Leave blank if you just want a standard keypress)"
+    read -p "Enter modifiers (optional): " MODS
+    ;;
+  *)
+    echo " No action selected. Exiting."
+    exit 1
+    ;;
+esac
+
+echo ""
+
+while true; do
+  read -p "$(echo -e "  Enter interval in seconds (e.g. 6, 0.5) ❯ ")" INTERVAL
+  if [[ "$INTERVAL" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+    break
+  else
+    echo -e " Invalid number. Please try again."
+  fi
+done
+
+
+clear
+echo -e "╭─ READY ──"
+echo -e "│ Target   : ${WINDOW_CLASS} (${WINDOW_ADDRESS})"
+echo -e "│ Action   : Mods=[${MODS:-None}], Key=[${KEY}]"
+echo -e "│ Interval : Every ${INTERVAL} seconds"
+echo -e "╰ "
+echo ""
+echo -e "Starting in 3 seconds... (Press Ctrl+C to stop)"
+sleep 3
+
+COUNT=0
+tput civis
+
+while true; do
+  hyprctl dispatch sendshortcut "${MODS},${KEY},address:${WINDOW_ADDRESS}" > /dev/null
+
+  ((COUNT++))
+
+  printf "\r\e[K ❯ ${RESET} Clicked %d times... " "$COUNT"
+
+  sleep "$INTERVAL"
+done

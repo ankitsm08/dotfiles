@@ -1,0 +1,48 @@
+[color]
+
+# Colors can be one of seven predefined: black, blue, cyan, green, magenta, red, white, yellow.
+# Or defined by hex code '#xxxxxx' (hex code must be within ''). User defined colors requires
+# a terminal that can change color definitions such as Gnome-terminal or rxvt.
+# default is to keep current terminal color
+; background = default
+; foreground = default
+
+# SDL and sdl_glsl only support hex code colors, these are the default:
+; background = '#1e1e2e'
+; foreground = '#33ffff'
+
+
+# Gradient mode, only hex defined colors are supported,
+# background must also be defined in hex or remain commented out. 1 = on, 0 = off.
+# You can define as many as 8 different colors. They range from bottom to top of screen
+gradient = 1
+
+gradient_color_1 = '#b4befe'  # lavender
+gradient_color_2 = '#89b4fa'  # blue
+gradient_color_3 = '#a6e3a1'  # green
+gradient_color_4 = '#f9e2af'  # yellow
+gradient_color_5 = '#fab387'  # peach
+gradient_color_6 = '#eba0ac'  # maroon
+gradient_color_7 = '#f38ba8'  # red
+gradient_color_8 = '#cba6f7'  # mauve
+
+# Horizontal is only supported on noncurses output.
+# Only one color will be calculated per bar.
+horizontal_gradient = 1
+
+horizontal_gradient_color_1 = '#fab387'  # peach
+horizontal_gradient_color_2 = '#f9e2af'  # yellow
+horizontal_gradient_color_3 = '#a6e3a1'  # green
+horizontal_gradient_color_4 = '#a6e3a1'  # green
+horizontal_gradient_color_5 = '#89b4fa'  # blue
+horizontal_gradient_color_6 = '#89b4fa'  # blue
+horizontal_gradient_color_7 = '#b4befe'  # lavender
+horizontal_gradient_color_8 = '#b4befe'  # lavender
+
+
+# If both vertical and horizontal gradient is enabled, vertical will be blended in this direction.
+# Can be 'up', 'down', 'left' or 'right'. 'up' means the vertical gradient will be blended in from
+# bottom to top. I.e. the bottom will be only the horizontal
+# and top will be only the color of the vertical gradient.
+blend_direction = 'up'
+

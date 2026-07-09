@@ -1,0 +1,9 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 32,
+  "spacing": 2,
+  "margin": "6 6 0 6",
+  "reload_style_on_change": true,
+  "mode": "dock"
+}

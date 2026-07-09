@@ -1,0 +1,17 @@
+{
+  "custom/auto-cpufreq": {
+    "format": "{icon}",
+    "format-icons": {
+      "powersave": "",
+      "balanced": "",
+      "performance": ""
+    },
+    "tooltip": true,
+    "exec": "~/.config/waybar/scripts/power-profile.sh",
+    "return-type": "json",
+    "on-click": "pkill -RTMIN+8 waybar",
+    "on-click-right": "foot --app-id=TUI.float -e zsh -c \"auto-cpufreq --stats\" && pkill -RTMIN+8 waybar",
+    "on-click-middle": "auto-cpufreq-gtk && pkill -RTMIN+8 waybar",
+    "signal": 8
+  }
+}

@@ -1,0 +1,28 @@
+# Drag n Drop
+[[mgr.prepend_keymap]]
+on = ["<C-n>", "n"]
+run = "shell -- dragon-drop -T \"$@\""
+desc = "Drag n Drop per file"
+
+[[mgr.prepend_keymap]]
+on = ["<C-n>", "m"]
+run = "shell -- dragon-drop -T -A \"$@\""
+desc = "Drag n Drop all file"
+
+# ya pkg add Ape/open-with-cmd
+[[mgr.prepend_keymap]]
+on = ["<C-o>"]
+run = "plugin open-with-cmd"
+desc = "Open with command"
+
+# ya pkg add ktunprasert/git-files
+[[mgr.prepend_keymap]]
+on = ["g", "c"]
+run = "plugin git-files"
+desc = "Show Git file changes"
+
+# Bookmarks
+[[mgr.prepend_keymap]]
+on = ["g", "d"]
+run = "cd \"$(xdg-user-dir DOWNLOAD)\""
+desc = "Goto Downloads"

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+action="$1"
+
+monitor="$(hyprctl -j monitors | jq -r '.[] | select(.focused).name')"
+status="$(playerctl status 2>/dev/null)"
+
+case "$action" in
+  toggle)
+    swayosd-client --monitor "$monitor" --playerctl play-pause
+    ;;
+
+  next)
+    if [ "$status" = "Playing" ]; then
+      swayosd-client --monitor "$monitor" --playerctl next
+    else
+      playerctld shift
+    fi
+    ;;
+
+  prev)
+    if [ "$status" = "Playing" ]; then
+      swayosd-client --monitor "$monitor" --playerctl previous
+    else
+      playerctld unshift
+    fi
+    ;;
+
+  *)
+    exit 1
+    ;;
+esac

@@ -1,0 +1,15 @@
+{
+  "custom/screenrec": {
+    "format": "{icon}",
+    "format-icons": {
+      "recording": "",
+      "stopped": ""
+    },
+    "tooltip": true,
+    "exec": "~/.local/bin/screenrec status",
+    "return-type": "json",
+    "on-click": "~/.local/bin/screenrec toggle",
+    "signal": 9,
+    "interval": "once"
+  }
+}

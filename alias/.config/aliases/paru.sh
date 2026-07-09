@@ -1,0 +1,7 @@
+alias p='paru'
+alias pai='paru -S'
+alias par='paru -Rns'
+alias pas='paru -Ss'
+alias pal='paru -Q'
+alias paf='paru -Ql'
+alias pao='paru -Qo'

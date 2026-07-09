@@ -1,0 +1,31 @@
+{
+  "wireplumber#sink": {
+    "node-type": "Audio/Sink",
+    "scroll-step": 1,
+    "format": "{volume}% {icon}",
+    "format-muted": " ",
+    "tooltip-format": "{node_name}",
+    "format-icons": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "max-volume": 150,
+    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+    "on-click-right": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.75",
+    "on-click-middle": "pavucontrol"
+  },
+  "wireplumber#source": {
+    "node-type": "Audio/Source",
+    "scroll-step": 1,
+    "format": "{volume}% ",
+    "tooltip-format": "{node_name}",
+    "format-muted": " ",
+    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle",
+    "on-click-right": "wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 0.75",
+    "on-click-middle": "helvum"
+  }
+}

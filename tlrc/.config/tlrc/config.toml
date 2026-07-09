@@ -1,0 +1,19 @@
+[cache]
+defer_auto_update = false
+
+[output]
+show_title = true
+platform_title = false
+show_hyphens = false
+edit_link = false
+example_prefix = "- "
+line_length = 0
+compact = true
+option_style = "long"
+raw_markdown = false
+
+[indent]
+title = 2
+description = 2
+bullet = 2
+example = 4

@@ -1,0 +1,46 @@
+{
+  "battery": {
+    "interval": 60,
+    "states": {
+      "good": 94,
+      "warning": 90,
+      "critical": 30
+    },
+    "format": "{capacity}% {icon}",
+    "format-discharging": "{capacity}% {icon}",
+    "format-charging": "{capacity}% {icon}",
+    "format-plugged": "",
+    "format-icons": {
+      "charging": [
+        "󰢜",
+        "󰂆",
+        "󰂇",
+        "󰂈",
+        "󰢝",
+        "󰂉",
+        "󰢞",
+        "󰂊",
+        "󰂋",
+        "󰂅"
+      ],
+      "default": [
+        "󰁺",
+        "󰁻",
+        "󰁼",
+        "󰁽",
+        "󰁾",
+        "󰁿",
+        "󰂀",
+        "󰂁",
+        "󰂂",
+        "󰁹"
+      ]
+    },
+    "format-full": "{capacity}% 󰂅",
+    "tooltip": true,
+    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+    "tooltip-format": "Battery : {capacity}%\nHealth  : {health}%\nTime to : {timeTo}\nCycles  : {cycles}",
+    "on-click-middle": "foot --app-id=TUI.float -e jolt"
+  }
+}

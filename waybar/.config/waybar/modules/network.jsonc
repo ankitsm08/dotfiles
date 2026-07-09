@@ -1,0 +1,18 @@
+{
+  "network": {
+    "family": "ipv4_6",
+    "format": "󰌘 {ifname}",
+    "format-wifi": "󰖩 {signalStrength}%",
+    "format-ethernet": "󰈀 {ipaddr}/{cidr}",
+    "format-linked": "󰌘 {ifname} (no ip)",
+    "format-disconnected": "󰖪 down",
+    "tooltip-format": "󰌘 {ifname}\n󰩟 {ipaddr}/{cidr}\n󰒍 {gwaddr}\n↑ {bandwidthUpBytes} B/s\n↓ {bandwidthDownBytes} B/s\nΣ {bandwidthTotalBytes} B/s",
+    "tooltip-format-wifi": "󰌘 {ifname}\n󰖩 {essid}\n󰔄 {signalStrength}% ({signaldBm} dBm)\n󰀂 {frequency} GHz\n󰩟 {ipaddr}/{cidr}\n󰒍 {gwaddr}\n↑ {bandwidthUpBytes} B/s\n↓ {bandwidthDownBytes} B/s\nΣ {bandwidthTotalBytes} B/s",
+    "tooltip-format-ethernet": "󰌘 {ifname}\n󰈀 wired\n󰩟 {ipaddr}/{cidr}\n󰩟 mask {netmask}\n󰒍 {gwaddr}\n↑ {bandwidthUpBytes} B/s\n↓ {bandwidthDownBytes} B/s\nΣ {bandwidthTotalBytes} B/s",
+    "tooltip-format-linked": "󰌘 {ifname}\n󰈀 link up\n󰩟 no ip\ndhcp/static missing",
+    "tooltip-format-disconnected": "󰖪 status disconnected\nno carrier",
+    "format-alt": "{essid}",
+    "on-click-right": "nm-connection-editor",
+    "on-click-middle": "foot --app-id=TUI.float -e impala"
+  }
+}

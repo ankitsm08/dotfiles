@@ -1,0 +1,16 @@
+{
+  "custom/power": {
+    "format": "⏻",
+    "tooltip": false,
+    "menu": "on-click",
+    "menu-file": "~/.config/waybar/menus/power-menu.xml",
+    "menu-actions": {
+      "logout": "hyprshutdown -t 'Logging out...'",
+      "lock": "loginctl lock-session",
+      "shutdown": "hyprshutdown -t 'Shutting down...' --post-cmd 'shutdown -P 0'",
+      "reboot": "hyprshutdown -t 'Restarting...' --post-cmd 'reboot'",
+      "suspend": "systemctl suspend",
+      "hibernate": "systemctl hibernate"
+    }
+  }
+}

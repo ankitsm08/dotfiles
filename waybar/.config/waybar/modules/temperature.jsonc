@@ -1,0 +1,18 @@
+{
+  "temperature": {
+    "hwmon-path": "/sys/class/hwmon/hwmon3/temp1_input",
+    "critical-threshold": 85,
+    "warning-threshold": 75,
+    "format-critical": "{temperatureC}°C 󰸁",
+    "format": "{temperatureC}°C {icon}",
+    "format-icons": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "tooltip": false,
+    "on-click-middle": "foot --app-id=TUI.float -e s-tui"
+  }
+}

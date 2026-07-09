@@ -1,0 +1,5 @@
+alias jb='journalctl -b'
+alias jf='journalctl --follow -n 100'
+alias jg='journalctl -b --grep'
+alias ju='journalctl --all --follow -n 100 --unit'
+alias juu='journalctl --all --follow -n 100 --user-unit'

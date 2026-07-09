@@ -1,0 +1,26 @@
+{
+  "custom/server-status": {
+    "format": "",
+    "tooltip": true,
+    "exec": "~/.config/waybar/scripts/server-status.sh --loop",
+    "return-type": "json",
+    "on-click": "foot --app-id=TUI.float -e zsh -c \"lazydocker\"",
+    "on-click-middle": "foot --app-id=TUI.float -e zsh -c \"tsui\"",
+    "menu": "on-click-right",
+    "menu-file": "$HOME/.config/waybar/menus/server-opts.xml",
+    "menu-actions": {
+      "dashboard": "xdg-open \"http://anklab.mywire.org\"",
+      "control": "xdg-open \"http://dockge.anklab.mywire.org\"",
+      "logs": "xdg-open \"http://dozzle.anklab.mywire.org\"",
+      "git": "xdg-open \"http://gitea.anklab.mywire.org\"",
+      "notifications": "xdg-open \"http://gitea.anklab.mywire.org\"",
+      "passwords": "xdg-open \"http://vw.anklab.mywire.org\"",
+      "documents": "xdg-open \"http://paperless.anklab.mywire.org\"",
+      "tailscale": "xdg-open \"http://login.tailscale.com\"",
+      "restart-tailscale": "pkexec sudo systemctl restart tailscaled",
+      "localhost": "xdg-open \"http://localhost:5001\"",
+      "restart": "pkexec systemctl restart docker.service",
+      "stop": "pkexec systemctl stop docker.service docker.socket"
+    }
+  }
+}

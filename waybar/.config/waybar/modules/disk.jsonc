@@ -1,0 +1,10 @@
+{
+  "disk": {
+    "interval": 60,
+    "format": "{percentage_used}% 󰋊",
+    "format-alt": "{used}/{total} 󰋊",
+    "tooltip": true,
+    "tooltip-format": "{used}/{total} ({percentage_used}%)\nAvail : {free}",
+    "on-click-middle": "foot --app-id=TUI.float -H -e zsh -c \"sleep 0.05; duf\""
+  }
+}

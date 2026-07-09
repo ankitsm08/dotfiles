@@ -1,0 +1,36 @@
+# Font
+font-family = "JetBrainsMono Nerd Font"
+font-size = 13
+
+# Window
+window-width=130
+window-height=36
+
+window-padding-x = 12,8
+window-padding-y = 8,2
+
+resize-overlay = never
+
+# Background & Foreground
+background = 0f0b18
+background-opacity = 0.85
+
+# Theme
+theme = Catppuccin Mocha
+
+# Cursor
+cursor-style = bar
+cursor-style-blink = false
+
+# Clipboard
+clipboard-write = allow
+copy-on-select = false
+
+# Mouse
+right-click-action = copy-or-paste
+
+# Shell
+shell-integration-features = no-cursor,sudo,title,ssh-env
+
+# Disable Ctrl+Enter fullscreen keybind
+keybind = ctrl+enter=unbind

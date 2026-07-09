@@ -1,0 +1,37 @@
+{
+  "custom/media_music": {
+    "return-type": "json",
+    "exec": "playerctl --player=spotify metadata --follow --format '{\"tooltip\":\"<b>{{ title }}</b>\\r󰐊 {{ status }}\\r{{ duration(position) }} / {{ duration(mpris:length) }}\\r󰠃 {{ artist }}\\r󰀥 {{ album }}\",\"class\":\"{{ status }}\"}'",
+    "exec-if": "playerctl --player=spotify status --follow | grep -Eq 'Playing|Paused'",
+    "format": "",
+    "format-tooltip": "{tooltip}",
+    "on-click": "playerctl --player=spotify play-pause",
+    "on-click-middle": "foot --app-id=TUI.float -e cava",
+    "on-scroll-up": "playerctl --player=spotify next",
+    "on-scroll-down": "playerctl --player=spotify previous",
+    "max-length": 20,
+    "tooltip": true
+  },
+  "custom/media_browser": {
+    "return-type": "json",
+    "exec": "playerctl --player=firefox metadata --follow --format '{\"tooltip\":\"{{ title }}\\r  Browser Media\",\"class\":\"{{ status }}\"}'",
+    "exec-if": "playerctl --player=firefox status --follow | grep -Eq 'Playing|Paused'",
+    "format": "",
+    "format-tooltip": "{tooltip}",
+    "on-click": "playerctl --player=firefox play-pause",
+    "on-scroll-up": "playerctl --player=firefox next",
+    "on-scroll-down": "playerctl --player=firefox previous",
+    "max-length": 26,
+    "tooltip": true
+  },
+  "custom/media": {
+    "format": "󰐎 {}",
+    "escape": true,
+    "interval": 5,
+    "tooltip": true,
+    "tooltip-format": "{}",
+    "exec": "playerctl metadata --format='{{ title }}'",
+    "on-click": "playerctl play-pause",
+    "max-length": 24
+  }
+}

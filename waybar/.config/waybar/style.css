@@ -1,7 +1,6 @@
 @import "mocha.css";
 
 * {
-  /* `otf-font-awesome` is required to be installed for icons */
   font-size: 13px;
   color: @text;
   font-family:
@@ -71,6 +70,17 @@ tooltip label {
   background-color: alpha(@red, 0.4);
 }
 
+/* If workspaces is the leftmost module, omit left margin */
+.modules-left > widget:first-child > #workspaces {
+  margin-left: 0;
+}
+
+/* If workspaces is the rightmost module, omit right margin */
+.modules-right > widget:last-child > #workspaces {
+  margin-right: 0;
+}
+
+/* ========== MODULE BASE (shared defaults) ========== */
 #custom-server-status,
 #clock,
 #battery,
@@ -95,6 +105,7 @@ tooltip label {
 #scratchpad,
 #power-profiles-daemon,
 #custom-auto-cpufreq,
+#custom-hyprsunset,
 #custom-notification,
 #custom-launcher,
 #custom-voxtype,
@@ -103,53 +114,18 @@ tooltip label {
   border-radius: 6px;
   background-color: shade(@surface0, 0.5);
   padding: 0 4px;
-  color: @text;
   box-shadow: 0 1px 1px alpha(@lavender, 0.35);
 }
 
-#mode {
-  background-color: #64727d;
-}
+/* ========== BUILT-IN MODULES ========== */
 
-#custom-server-status {
-  padding: 0 6px;
-}
-
-#custom-server-status.online {
-  color: @green;
-}
-
-#custom-server-status.degraded-https {
-  color: @yellow;
-}
-
-#custom-server-status.degraded-port {
-  color: @peach;
-}
-
-#custom-server-status.offline {
-  color: @red;
-}
-
-/* If workspaces is the leftmost module, omit left margin */
-.modules-left > widget:first-child > #workspaces {
-  margin-left: 0;
-}
-
-/* If workspaces is the rightmost module, omit right margin */
-.modules-right > widget:last-child > #workspaces {
-  margin-right: 0;
-}
-
-#clock {
-  padding: 0 6px;
+/* --- backlight / custom-brightness --- */
+#backlight,
+#custom-brightness {
   color: @text;
-  transition: box-shadow 0.2s ease-out;
-}
-#clock:hover {
-  box-shadow: 0 1px 1px alpha(@text, 0.35);
 }
 
+/* --- battery --- */
 #battery {
   color: @green;
 }
@@ -157,13 +133,6 @@ tooltip label {
 #battery.charging,
 #battery.plugged {
   color: @green;
-}
-
-@keyframes blink {
-  to {
-    background-color: @red;
-    color: @text;
-  }
 }
 
 #battery.warning:not(.charging) {
@@ -180,23 +149,68 @@ tooltip label {
   animation-direction: alternate;
 }
 
+/* --- bluetooth --- */
+#bluetooth {
+  color: @teal;
+}
+
+/* --- clock --- */
+#clock {
+  padding: 0 6px;
+  color: @text;
+  transition: box-shadow 0.2s ease-out;
+}
+
+#clock:hover {
+  box-shadow: 0 1px 1px alpha(@text, 0.35);
+}
+
+/* --- cpu --- */
+#cpu {
+  color: @sapphire;
+}
+
+/* --- disk --- */
+#disk {
+  color: @flamingo;
+}
+
+/* --- idle_inhibitor --- */
+#idle_inhibitor {
+  min-width: 1rem;
+  padding: 0 4px;
+  color: @subtext0;
+}
+
+#idle_inhibitor.activated {
+  color: @text;
+}
+
+/* --- memory --- */
+#memory {
+  color: @blue;
+}
+
+/* --- mode --- */
+#mode {
+  background-color: #64727d;
+}
+
+/* --- network --- */
+#network {
+  color: @sky;
+}
+
+#network.disconnected {
+  color: @red;
+}
+
+/* --- power-profiles-daemon --- */
 #power-profiles-daemon {
   padding: 0 2px;
   min-width: 1rem;
   color: @text;
   background-color: transparent;
-}
-
-#custom-auto-cpufreq {
-  color: @blue;
-}
-
-#custom-auto-cpufreq.performance {
-  color: @maroon;
-}
-
-#custom-auto-cpufreq.powersave {
-  color: @green;
 }
 
 #power-profiles-daemon.performance {
@@ -211,98 +225,7 @@ tooltip label {
   color: @green;
 }
 
-#cpu {
-  color: @sapphire;
-}
-
-#memory {
-  color: @blue;
-}
-
-#disk {
-  color: @flamingo;
-}
-
-#backlight,
-#custom-brightness {
-  color: @text;
-}
-
-#bluetooth {
-  color: @teal;
-}
-
-#network {
-  color: @sky;
-}
-
-#network.disconnected {
-  color: @red;
-}
-
-#wireplumber.sink {
-  color: @peach;
-}
-
-#wireplumber.source {
-  color: @rosewater;
-}
-
-#wireplumber.muted {
-  color: @pink;
-}
-
-#custom-media,
-#custom-media_music,
-#custom-media_browser,
-#custom-media_other {
-  color: @mauve;
-  border-radius: 1rem;
-  transition: opacity 0.25s ease;
-}
-
-#custom-media_music.Paused,
-#custom-media_browser.Paused {
-  opacity: 0.6;
-}
-
-#temperature {
-  color: @yellow;
-}
-
-#temperature.warning {
-  color: @maroon;
-}
-
-#temperature.critical {
-  color: @red;
-}
-
-#tray {
-  border: 1px solid alpha(shade(@lavender, 0.7), 0.4);
-  color: @teal;
-  background-color: transparent;
-}
-
-#tray > .passive {
-  -gtk-icon-effect: dim;
-}
-
-#tray > .needs-attention {
-  -gtk-icon-effect: highlight;
-  background-color: alpha(@red, 0.5);
-}
-
-#idle_inhibitor {
-  min-width: 1rem;
-  padding: 0 4px;
-  color: @subtext0;
-}
-
-#idle_inhibitor.activated {
-  color: @text;
-}
-
+/* --- privacy --- */
 #privacy {
   padding: 3px;
 }
@@ -324,23 +247,89 @@ tooltip label {
   color: @subtext0;
 }
 
-#custom-lock {
-  margin-left: 0.3rem;
-  border-radius: 1rem;
-  color: @lavender;
+/* --- temperature --- */
+#temperature {
+  color: @yellow;
 }
 
-#custom-power {
-  margin-left: 0.3rem;
-  margin-right: 1rem;
-  border-radius: 1rem;
+#temperature.warning {
+  color: @maroon;
+}
+
+#temperature.critical {
   color: @red;
 }
 
-#custom-notification {
-  color: @lavender;
+/* --- tray --- */
+#tray {
+  border: 1px solid alpha(shade(@lavender, 0.7), 0.4);
+  color: @teal;
+  background-color: transparent;
 }
 
+#tray > .passive {
+  -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+  -gtk-icon-effect: highlight;
+  background-color: alpha(@red, 0.5);
+}
+
+/* --- wireplumber --- */
+#wireplumber.sink {
+  color: @peach;
+}
+
+#wireplumber.source {
+  color: @rosewater;
+}
+
+#wireplumber.muted {
+  color: @pink;
+}
+
+/* ========== CUSTOM MODULES ========== */
+
+/* --- custom/auto-cpufreq --- */
+#custom-auto-cpufreq {
+  color: @blue;
+}
+
+#custom-auto-cpufreq.performance {
+  color: @maroon;
+}
+
+#custom-auto-cpufreq.powersave {
+  color: @green;
+}
+
+/* --- custom/hyprsunset --- */
+#custom-hyprsunset {
+  color: @yellow;
+}
+
+#custom-hyprsunset.warm {
+  color: @peach;
+}
+
+#custom-hyprsunset.neutral {
+  color: @yellow;
+}
+
+#custom-hyprsunset.cool {
+  color: @sky;
+}
+
+#custom-hyprsunset.cold {
+  color: @sapphire;
+}
+
+#custom-hyprsunset.identity {
+  color: @text;
+}
+
+/* --- custom/launcher --- */
 #custom-launcher {
   margin-left: 1rem;
   margin-right: 0.1rem;
@@ -353,6 +342,42 @@ tooltip label {
   box-shadow: 0 0 2px @sapphire;
 }
 
+/* --- custom/lock --- */
+#custom-lock {
+  margin-left: 0.3rem;
+  border-radius: 1rem;
+  color: @lavender;
+}
+
+/* --- custom/media --- */
+#custom-media,
+#custom-media_music,
+#custom-media_browser,
+#custom-media_other {
+  color: @mauve;
+  border-radius: 1rem;
+  transition: opacity 0.25s ease;
+}
+
+#custom-media_music.Paused,
+#custom-media_browser.Paused {
+  opacity: 0.6;
+}
+
+/* --- custom/notification --- */
+#custom-notification {
+  color: @lavender;
+}
+
+/* --- custom/power --- */
+#custom-power {
+  margin-left: 0.3rem;
+  margin-right: 1rem;
+  border-radius: 1rem;
+  color: @red;
+}
+
+/* --- custom/screenrec --- */
 #custom-screenrec {
   color: @text;
   padding: 0 4px;
@@ -363,6 +388,28 @@ tooltip label {
   animation: pulse 2s ease-in-out infinite;
 }
 
+/* --- custom/server-status --- */
+#custom-server-status {
+  padding: 0 6px;
+}
+
+#custom-server-status.online {
+  color: @green;
+}
+
+#custom-server-status.degraded-https {
+  color: @yellow;
+}
+
+#custom-server-status.degraded-port {
+  color: @peach;
+}
+
+#custom-server-status.offline {
+  color: @red;
+}
+
+/* --- custom/voxtype --- */
 #custom-voxtype {
   color: @text;
   padding: 0 8px;
@@ -386,6 +433,14 @@ tooltip label {
   color: @pink;
 }
 
+/* ========== ANIMATIONS ========== */
+@keyframes blink {
+  to {
+    background-color: @red;
+    color: @text;
+  }
+}
+
 @keyframes pulse {
   from {
     opacity: 1;
@@ -396,4 +451,22 @@ tooltip label {
   to {
     opacity: 1;
   }
+}
+
+/* ========== LABEL INHERITANCE FIX ========== */
+#custom-server-status label,
+#custom-brightness label,
+#custom-media label,
+#custom-media_music label,
+#custom-media_browser label,
+#custom-media_other label,
+#custom-auto-cpufreq label,
+#custom-hyprsunset label,
+#custom-notification label,
+#custom-launcher label,
+#custom-voxtype label,
+#custom-screenrec label,
+#custom-lock label,
+#custom-power label {
+  color: inherit;
 }

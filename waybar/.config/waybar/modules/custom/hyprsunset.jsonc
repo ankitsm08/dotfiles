@@ -1,0 +1,15 @@
+{
+  "custom/hyprsunset": {
+    "format": "{}",
+    "exec": "~/.config/waybar/scripts/hyprsunset.sh",
+    "return-type": "json",
+    "on-scroll-up": "~/.config/waybar/scripts/hyprsunset.sh --up",
+    "on-scroll-down": "~/.config/waybar/scripts/hyprsunset.sh --down",
+    "on-click": "~/.config/waybar/scripts/hyprsunset.sh --toggle-identity",
+    "on-click-right": "~/.config/waybar/scripts/hyprsunset.sh --reset",
+    "on-click-middle": "~/.config/waybar/scripts/hyprsunset.sh --refresh",
+    "signal": 10,
+    "interval": 180,
+    "tooltip": true
+  }
+}

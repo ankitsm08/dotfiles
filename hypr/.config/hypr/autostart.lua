@@ -26,6 +26,7 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("syncthing serve --no-browser")
   hl.exec_cmd("gotify-desktop")
   hl.exec_cmd("tailscale systray")
+  hl.exec_cmd("~/.config/hypr/scripts/soundboard-setup.sh")
 
   -- Start recording clipboard history (text + images)
   hl.exec_cmd("wl-paste --type image --watch cliphist store")

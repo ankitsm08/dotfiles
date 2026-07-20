@@ -76,8 +76,14 @@ hl.bind(
   { description = "Define Word in Clipboard" }
 )
 
+-- Soundboard
+hl.bind(
+  super .. "S",
+  hl.dsp.exec_cmd(vars.floatingTerminal .. " -e ~/.config/hypr/scripts/soundboard.sh"),
+  { description = "Soundboard" }
+)
+
 -- Screenshot
-hl.bind(super .. "S", hl.dsp.exec_cmd("~/.config/hypr/scripts/flameshot.sh gui"), { description = "Screenshot" })
 hl.bind(
   super .. shift .. "S",
   hl.dsp.exec_cmd(

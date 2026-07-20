@@ -257,7 +257,7 @@ leader-key() {
     f) _run_cmd " tmux-sessionizer" ;;
     g) _run_cmd " lazygit || git status" ;;
     n) _run_cmd " nvim || vim || vi || nano" ;;
-    o) _run_cmd " opencode" ;;
+    o) _run_cmd " opencode --port" ;;
     b) _run_cmd " rbw unlock" ;;
     q) _run_cmd " exit" ;;
     s) _run_cmd " lazyssh" ;;

@@ -11,6 +11,15 @@ return {
         changedelete = { text = "~" },
       },
     },
+    keys = {
+      {
+        "<leader>gb",
+        function()
+          require("gitsigns").blame_line()
+        end,
+        desc = "Toggle current line blame",
+      },
+    },
   },
   {
     "esmuellert/codediff.nvim",
@@ -36,7 +45,7 @@ return {
     opts = {},
     keys = {
       {
-        "<leader>ghp",
+        "<leader>gd",
         function()
           require("inlinediff").toggle()
         end,

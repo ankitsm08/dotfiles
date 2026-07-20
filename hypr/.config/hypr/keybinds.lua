@@ -27,17 +27,22 @@ hl.bind(super .. control .. "L", hl.dsp.exec_cmd("pkill wlogout || wlogout"))
 
 -- Wallpaper picker/changer
 hl.bind(
-  super .. alter .. "W",
-  hl.dsp.exec_cmd("~/.config/hypr/scripts/wallpaper.sh"),
+  super .. "W",
+  hl.dsp.exec_cmd("vicinae vicinae://launch/@sovereign/store.vicinae.awww-switcher/wpgrid"),
   { description = "Pick a wallpaper" }
 )
 hl.bind(
   super .. shift .. "W",
+  hl.dsp.exec_cmd("vicinae vicinae://launch/@sovereign/store.vicinae.awww-switcher/wprandom"),
+  { description = "Pick a wallpaper" }
+)
+hl.bind(
+  super .. alter .. "W",
   hl.dsp.exec_cmd("~/.config/hypr/scripts/wallpaper.sh --random"),
   { description = "Random wallpaper" }
 )
 hl.bind(
-  super .. shift .. control .. "W",
+  super .. alter .. shift .. "W",
   hl.dsp.exec_cmd("~/.config/hypr/scripts/wallpaper.sh --reverse"),
   { description = "Reverse wallpaper" }
 )

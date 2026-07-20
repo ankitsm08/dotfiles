@@ -119,11 +119,23 @@
       },
       "@sovereign/store.vicinae.awww-switcher": {
          "preferences": {
-            "wallpaperPath": "~/.config/wallpapers/"
+            "wallpaperPath": "~/.config/wallpapers/",
+            "colorGenTool": "none",
+            "gridRows": "3",
+            "postProduction": "no",
+            "showImageDetails": true,
+            "toggleVicinaeSetting": true,
+            "transitionDuration": "3",
+            "transitionFPS": "60",
+            "transitionStep": "90",
+            "transitionType": "random"
          },
          "entrypoints": {
             "wpgrid": {
-               "alias": "awww"
+               "alias": "aw"
+            },
+            "wprandom": {
+               "alias": "rw"
             }
          }
       },

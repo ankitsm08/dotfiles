@@ -12,6 +12,7 @@
   editor = nvim
   preloadindex = true
   autocrlf = input
+  excludesfile = ~/.gitignore-global
 
 [advice]
   statusHints = false
@@ -92,3 +93,6 @@
   oauthAuthURL = /login/oauth/authorize
   oauthTokenURL = /login/oauth/access_token
   oauthDeviceAuthURL = /login/oauth/authorize_device
+
+[includeIf "gitdir:~/dev/college"]
+  path = ~/.gitconfig-college

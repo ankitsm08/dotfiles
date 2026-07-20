@@ -46,21 +46,27 @@ return {
 
       -- Document existing key chains
       spec = {
+        { "<leader>a", group = "[A]I" },
         { "<leader>s", group = "[S]earch" },
         { "<leader>t", group = "[T]oggle" },
-        { "<leader>h", group = "Git [H]unk", mode = { "n", "v" } },
+        { "<leader>e", group = "[E]xplore" },
+        { "<leader>g", group = "[G]it" },
+        { "<leader>j", group = "[J]oin/Split" },
+        { "<leader>x", group = "Cut fi[X]" },
+        { "<leader>q", group = "[Q]uit/Session" },
+        { "<leader>r", group = "[R]un" },
         {
           mode = { "n", "x" },
           {
             "<leader>b",
-            group = "buffer",
+            group = "[B]uffer",
             expand = function()
               return require("which-key.extras").expand.buf()
             end,
           },
           {
             "<leader>w",
-            group = "windows",
+            group = "[W]indows",
             proxy = "<c-w>",
             expand = function()
               return require("which-key.extras").expand.win()

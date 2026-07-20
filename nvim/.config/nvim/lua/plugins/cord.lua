@@ -53,11 +53,11 @@ return {
     "vyfor/cord.nvim",
     keys = {
       {
-        "<leader>Cs",
+        "<leader>C",
         function()
           require("cord").setup()
         end,
-        desc = "Cord Start",
+        desc = "[C]ord Start",
       },
     },
     ---@type CordConfig

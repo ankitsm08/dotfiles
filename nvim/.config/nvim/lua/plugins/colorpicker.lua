@@ -18,7 +18,7 @@ return {
     end,
     keys = {
       {
-        "<leader>cc",
+        "gC",
         function()
           vim.cmd("CccPick")
         end,

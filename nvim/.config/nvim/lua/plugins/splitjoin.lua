@@ -6,7 +6,7 @@ return {
       -- Module mappings. Use `''` (empty string) to disable one.
       -- Created for both Normal and Visual modes.
       mappings = {
-        toggle = "<leader>gs",
+        toggle = "<leader>js",
         split = "",
         join = "",
       },
@@ -43,7 +43,7 @@ return {
     "Wansmer/treesj",
     keys = {
       {
-        "<leader>gS",
+        "<leader>jS",
         mode = { "n" },
         function()
           require("treesj").toggle()

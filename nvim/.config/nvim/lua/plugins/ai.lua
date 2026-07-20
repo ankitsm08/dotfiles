@@ -73,7 +73,7 @@ return {
     end,
     keys = {
       -- Keymap for visual selection menu
-      { "<leader>ag", ":Gen<CR>", mode = { "v", "n" }, desc = "Gen.nvim Menu" },
+      { "<leader>ag", ":Gen<CR>", mode = { "v", "n" }, desc = "AI [G]en Menu" },
     },
   },
 }

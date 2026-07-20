@@ -5,7 +5,7 @@ return {
     -- Optional: you can add some keybindings
     -- (I personally use lspsaga so check out lspsaga integration or lsp integration for a smoother experience without separate keybindings)
     keys = {
-      { "<leader>ge", "<cmd>EcologGoto<cr>", desc = "Go to env file" },
+      { "<leader>eg", "<cmd>EcologGoto<cr>", desc = "[E]nvironment [G]oto" },
       { "<leader>ep", "<cmd>EcologPeek<cr>", desc = "Ecolog peek variable" },
       { "<leader>es", "<cmd>EcologSelect<cr>", desc = "Switch env file" },
     },

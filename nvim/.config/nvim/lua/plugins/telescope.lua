@@ -103,6 +103,13 @@ return {
         builtin.find_files({ cwd = vim.fn.stdpath("config") })
       end, { desc = "[S]earch [N]eovim files" })
 
+      -- Git pickers
+      vim.keymap.set("n", "<leader>sgc", builtin.git_commits, { desc = "[S]earch [G]it [C]ommits" })
+      vim.keymap.set("n", "<leader>sgC", builtin.git_bcommits, { desc = "[S]earch [G]it Buffer [C]ommits" })
+      vim.keymap.set("n", "<leader>sgb", builtin.git_branches, { desc = "[S]earch [G]it [B]ranches" })
+      vim.keymap.set("n", "<leader>sgs", builtin.git_status, { desc = "[S]earch [G]it [S]tatus" })
+      vim.keymap.set("n", "<leader>sgS", builtin.git_stash, { desc = "[S]earch [G]it [S]tash" })
+
       -- Enable line numbers in preview windows
       vim.api.nvim_create_autocmd("User", {
         pattern = "TelescopePreviewerLoaded",

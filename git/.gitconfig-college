@@ -1,0 +1,6 @@
+[user]
+  email = ankitsm08.tiucse@gmail.com
+  signingkey = ACE9572B9490779DD361922B0F711A6E2FC62A27
+
+[credential "https://github.com"]
+  username = ankitsm08tiu

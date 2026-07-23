@@ -11,6 +11,9 @@ bindkey -e
 bindkey '^@' leader-key
 bindkey -s '\el' ' ls\n'
 
+# Fix Ctrl+W to stop at *?_-.[]~=/&;!#$%^(){}<> characters
+export WORDCHARS=''
+
 # [Backspace] - delete backward
 bindkey -M emacs '^?' backward-delete-char
 # [Delete] - delete forward
@@ -251,7 +254,9 @@ leader-key() {
   fi
   case $key in
     $'\C-f') _run_cmd " tmux-sessionizer" ;;
+    $'\C-g') _run_cmd " lazygit || git status" ;;
     $'\C-n') _run_cmd " nvim || vim || vi || nano" ;;
+    $'\C-o') _run_cmd " opencode --port" ;;
     c) _run_cmd " cht-enable" ;;
     d) _run_cmd " lazydocker || docker ps" ;;
     f) _run_cmd " tmux-sessionizer" ;;

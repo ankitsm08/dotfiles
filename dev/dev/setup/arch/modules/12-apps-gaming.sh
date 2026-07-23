@@ -25,9 +25,6 @@ pacmani mangohud
 parui sunshine-bin
 
 # -- AUR: gaming extras ----------------------------------------------
-parui \
-  ruffle-nightly-bin \
-  vicinae-bin \
-  winboat-bin
+parui ruffle-nightly-bin
 
 ok "gaming done"

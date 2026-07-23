@@ -23,6 +23,9 @@ pacmani qpdf
 # -- Audiobook / Speech ----------------------------------------------
 pacmani voxtype-bin
 
+# -- AUR: Windows VM ---------------------------------------
+parui winboat-bin
+
 # -- AUR: office extras ----------------------------------------------
 parui \
   fend-bin \

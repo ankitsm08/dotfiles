@@ -23,6 +23,7 @@ pacmani swaync dunst
 
 # -- Launchers / Menus -----------------------------------------------
 pacmani rofi rofi-calc wofi
+parui vicinae-bin
 
 # -- OSD / Media keys ------------------------------------------------
 pacmani swayosd cliphist

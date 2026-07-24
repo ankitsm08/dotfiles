@@ -1,0 +1,229 @@
+#!/usr/bin/env bash
+# vcomp - Advanced VAAPI Video Compressor
+# Requires: ffmpeg, fzf, fd (or fdfind), ffprobe, awk, stat
+
+set -e
+
+# --- Configuration ---
+DRI_DEVICE="/dev/dri/renderD128"
+
+# Nerd Font Icons
+IC_VID="󰕧"
+IC_COG=""
+IC_SLIDE=""
+IC_RESIZE="󰩨"
+IC_FPS="󰥔"
+IC_AUDIO=""
+IC_CLOCK=""
+IC_SAVE=""
+IC_SUCCESS=""
+IC_ERROR=""
+IC_INFO=""
+
+# --- Dependency Check ---
+for cmd in ffmpeg fzf ffprobe awk stat; do
+  if ! command -v "$cmd" &> /dev/null; then
+    echo -e "\e[31m${IC_ERROR} Error: '$cmd' is not installed.\e[0m"
+    exit 1
+  fi
+done
+
+FD_CMD="fd"
+if ! command -v fd &> /dev/null; then
+  if command -v fdfind &> /dev/null; then
+    FD_CMD="fdfind"
+  else
+    echo -e "\e[31m${IC_ERROR} Error: 'fd' (or 'fdfind') is not installed.\e[0m"
+    exit 1
+  fi
+fi
+
+# --- Helper Function: Time to Seconds ---
+# Converts HH:MM:SS or MM:SS to total seconds for math calculations
+time_to_seconds() {
+  local t="$1"
+  [ -z "$t" ] && echo "0" && return
+  echo "$t" | awk -F: '{
+    if (NF == 3) print $1*3600 + $2*60 + $3;
+    else if (NF == 2) print $1*60 + $2;
+    else print $1;
+  }'
+}
+
+# --- 1. Select Input File(s) ---
+declare -a INPUT_FILES
+if [ -n "$1" ] && [ -f "$1" ]; then
+  INPUT_FILES=("$1")
+else
+  PREVIEW_CMD='echo -e "\e[34mFile Size:\e[0m $(du -h {} | cut -f1)\n" && ffprobe -hide_banner -v quiet -show_format -show_streams -select_streams v:0 {} | grep -E "^codec_name|^width|^height|^r_frame_rate|^duration"'
+
+  # fzf -m allows multi-selection.
+  # fd is piped through stat to sort by Modification Time (Recent first), then cut cleans the output.
+  mapfile -t INPUT_FILES < <( \
+      $FD_CMD -t f -e mp4 -e mkv -e webm -e avi -e mov -e flv . \
+      -x stat -c "%Y %n" {} | sort -nr | cut -d' ' -f2- | \
+      fzf -m \
+      --prompt="${IC_VID}  Select target file(s) [Tab: Multi-select, Sorted by Recent]: " \
+      --preview="$PREVIEW_CMD" \
+      --preview-window=right:40%:wrap \
+      --height=70% --layout=reverse --border \
+    )
+
+  [ ${#INPUT_FILES[@]} -eq 0 ] && echo -e "\e[33mNo files selected. Exiting.\e[0m" && exit 0
+fi
+
+# --- 2. Select Video Codec ---
+CODEC_CHOICE=$(printf "hevc_vaapi\t[H.265] Optimal compression\nh264_vaapi\t[H.264] Maximum compatibility\nav1_vaapi\t[AV1] Modern standard (Requires recent hardware)" | \
+  fzf --prompt="${IC_COG}  Encoder Selection: " --height=10 --layout=reverse --border | awk '{print $1}')
+[ -z "$CODEC_CHOICE" ] && exit 0
+
+# --- 3. Select Quantization Parameter (Quality) ---
+QP_CHOICE=$(printf "24\t[High Quality] Target larger file size\n28\t[Balanced] Recommended default\n32\t[Low Quality] Target minimum file size\nCustom\tInput specific QP value" | \
+  fzf --prompt="${IC_SLIDE}  Quantization Parameter (Lower = Better Quality): " --height=10 --layout=reverse --border | awk '{print $1}')
+[ -z "$QP_CHOICE" ] && exit 0
+
+if [[ "$QP_CHOICE" == "Custom" ]]; then
+  read -p "Enter integer QP value (e.g., 18-40): " QP_CHOICE
+  if ! [[ "$QP_CHOICE" =~ ^[0-9]+$ ]]; then
+    echo -e "\e[31m${IC_ERROR} Invalid QP input.\e[0m" && exit 1
+  fi
+fi
+
+# --- 4. Select Resolution (Hardware Scaling) ---
+RESIZE_CHOICE=$(printf "Original\tMaintain source resolution\n2160\t[4K] Scale to 2160p\n1440\t[2K] Scale to 1440p\n1080\t[FHD] Scale to 1080p\n720\t[HD] Scale to 720p\nCustom\tInput specific height" | \
+  fzf --prompt="${IC_RESIZE}  Target Resolution (Height): " --height=11 --layout=reverse --border | awk '{print $1}')
+[ -z "$RESIZE_CHOICE" ] && exit 0
+
+if [[ "$RESIZE_CHOICE" == "Custom" ]]; then
+  read -p "Enter target height in pixels (e.g., 864): " RESIZE_CHOICE
+  if ! [[ "$RESIZE_CHOICE" =~ ^[0-9]+$ ]]; then
+    echo -e "\e[31m${IC_ERROR} Invalid height input.\e[0m" && exit 1
+  fi
+fi
+
+# --- 5. Select Framerate ---
+FPS_CHOICE=$(printf "Original\tMaintain source framerate\n60\tLimit to 60 FPS\n30\tLimit to 30 FPS\n24\tLimit to 24 FPS (Cinematic)\nCustom\tInput specific framerate" | \
+  fzf --prompt="${IC_FPS}  Target Framerate: " --height=10 --layout=reverse --border | awk '{print $1}')
+[ -z "$FPS_CHOICE" ] && exit 0
+
+if [[ "$FPS_CHOICE" == "Custom" ]]; then
+  read -p "Enter target framerate (e.g., 48, 23.976): " FPS_CHOICE
+  if ! [[ "$FPS_CHOICE" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+    echo -e "\e[31m${IC_ERROR} Invalid framerate input.\e[0m" && exit 1
+  fi
+fi
+
+# --- 6. Select Audio Handling ---
+AUDIO_CHOICE=$(printf "copy\tPass-through source audio\n256k\tEncode AAC @ 256kbps (High Quality)\n128k\tEncode AAC @ 128kbps (Standard)\n64k\tEncode AAC @ 64kbps (Voice Focus)\nnone\tStrip audio track" | \
+  fzf --prompt="${IC_AUDIO}  Audio Processing: " --height=10 --layout=reverse --border | awk '{print $1}')
+[ -z "$AUDIO_CHOICE" ] && exit 0
+
+# --- 7. Trimming (Single File Only) ---
+TRIM_START=""
+TRIM_DURATION=""
+if [ ${#INPUT_FILES[@]} -eq 1 ]; then
+  echo -e "\n${IC_CLOCK}  \e[1mTemporal Trimming (Leave blank to skip)\e[0m"
+  read -p "Start time (e.g., 00:01:30 or 90): " TRIM_START
+  read -p "Duration (e.g., 60, or -10 to trim 10s from end): " TRIM_DURATION
+fi
+
+# --- Processing Loop ---
+echo -e "\n\e[34m${IC_INFO} Initializing processing for ${#INPUT_FILES[@]} file(s)...\e[0m\n"
+
+for INPUT_FILE in "${INPUT_FILES[@]}"; do
+  BASENAME=$(basename -- "$INPUT_FILE")
+  FILENAME="${BASENAME%.*}"
+  EXTENSION="${BASENAME##*.}"
+
+  # --- Handle Negative Slicing Logic ---
+  CALC_START="$TRIM_START"
+  CALC_DUR="$TRIM_DURATION"
+
+  if [[ "$CALC_DUR" == -* ]]; then
+    # Fetch total duration via ffprobe
+    TOTAL_DUR=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$INPUT_FILE")
+    START_SEC=$(time_to_seconds "$CALC_START")
+    TRIM_OFFSET="${CALC_DUR#-}" # Strip the minus sign
+
+    # Calculate exact duration required to satisfy the negative offset
+    CALC_DUR=$(awk "BEGIN {print $TOTAL_DUR - $START_SEC - $TRIM_OFFSET}")
+
+    # Validate mathematical sanity
+    IS_VALID=$(awk "BEGIN {print ($CALC_DUR > 0) ? 1 : 0}")
+    if [ "$IS_VALID" -eq 0 ]; then
+      echo -e "\e[31m${IC_ERROR} Error: Trim math results in <= 0 seconds for $BASENAME. Skipping.\e[0m"
+      continue
+    fi
+  fi
+
+  # --- Output Naming ---
+  SUFFIX="$(echo $CODEC_CHOICE | cut -d'_' -f1)_q${QP_CHOICE}"
+  [ "$RESIZE_CHOICE" != "Original" ] && SUFFIX="${SUFFIX}_${RESIZE_CHOICE}p"
+  [ "$FPS_CHOICE" != "Original" ] && SUFFIX="${SUFFIX}_${FPS_CHOICE}fps"
+
+  DEFAULT_OUTPUT="${FILENAME}_${SUFFIX}.${EXTENSION}"
+
+  # Single files prompt for rename. Batch auto-names to prevent terminal spam.
+  if [ ${#INPUT_FILES[@]} -eq 1 ]; then
+    read -e -i "$DEFAULT_OUTPUT" -p "${IC_SAVE}  Output filename: " OUTPUT_FILE
+    [ -z "$OUTPUT_FILE" ] && exit 0
+  else
+    OUTPUT_FILE="$DEFAULT_OUTPUT"
+  fi
+
+  # Overwrite protection
+  if [ -f "$OUTPUT_FILE" ]; then
+    read -p "${IC_ERROR} File '$OUTPUT_FILE' exists. Overwrite? [y/N]: " OVERWRITE
+    if [[ "$OVERWRITE" != [yY]* ]]; then
+      echo "Skipping $BASENAME..."
+      continue
+    fi
+  fi
+
+  # --- Construct Hardware Filter Chain ---
+  VF_CHAIN="format=nv12,hwupload"
+  if [ "$RESIZE_CHOICE" != "Original" ]; then
+    VF_CHAIN="${VF_CHAIN},scale_vaapi=w=-2:h=${RESIZE_CHOICE}"
+  fi
+
+  # --- Construct FFmpeg Command Array ---
+  FFMPEG_ARGS=(-hide_banner -vaapi_device "$DRI_DEVICE")
+
+  # Inject Trimming before input for fast-seeking
+  [ -n "$CALC_START" ] && FFMPEG_ARGS+=(-ss "$CALC_START")
+  [ -n "$CALC_DUR" ]   && FFMPEG_ARGS+=(-t "$CALC_DUR")
+
+  FFMPEG_ARGS+=(-i "$INPUT_FILE" -vf "$VF_CHAIN" -c:v "$CODEC_CHOICE" -qp "$QP_CHOICE")
+
+  # Inject Framerate
+  [ "$FPS_CHOICE" != "Original" ] && FFMPEG_ARGS+=(-r "$FPS_CHOICE")
+
+  # Inject Audio Options
+  case "$AUDIO_CHOICE" in
+    copy) FFMPEG_ARGS+=(-c:a copy) ;;
+    none) FFMPEG_ARGS+=(-an) ;;
+    *)    FFMPEG_ARGS+=(-c:a aac -b:a "$AUDIO_CHOICE") ;;
+  esac
+
+  FFMPEG_ARGS+=(-y "$OUTPUT_FILE")
+
+  # --- Execution ---
+  echo -e "\e[32m${IC_COG}  Processing: $BASENAME\e[0m"
+  echo -e "\e[90mCommand: ffmpeg ${FFMPEG_ARGS[*]}\e[0m\n" # Displays the resolved negative duration!
+
+  ORIGINAL_SIZE=$(du -h "$INPUT_FILE" | cut -f1)
+
+  ffmpeg "${FFMPEG_ARGS[@]}"
+
+  if [ $? -eq 0 ]; then
+    NEW_SIZE=$(du -h "$OUTPUT_FILE" | cut -f1)
+    echo -e "\n\e[32m${IC_SUCCESS} Execution Completed Successfully\e[0m"
+    echo -e "Input Size:  \e[31m$ORIGINAL_SIZE\e[0m"
+    echo -e "Output Size: \e[32m$NEW_SIZE\e[0m"
+    echo -e "Artifact:    $OUTPUT_FILE\n"
+  else
+    echo -e "\n\e[31m${IC_ERROR} Execution Failed on $BASENAME.\e[0m\n"
+  fi
+done
+
+echo -e "\e[32m${IC_SUCCESS} All tasks completed.\e[0m"

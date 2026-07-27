@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -e
+
+# Loop continuously until the rebase finishes or encounters a conflict
+while true; do
+  # Extract the raw author date string from HEAD using git log format %ad
+  RAW_DATE=$(git log -1 --format='%ad')
+
+  if [ -z "$RAW_DATE" ]; then
+    echo "Error: Could not retrieve date from commit."
+    exit 1
+  fi
+
+  # Re-order the string so GNU date can parse it reliably:
+  # "Fri Jul 24 23:38:49 2026 +0530" -> "Fri Jul 24 2026 23:38:49 +0530"
+  CLEAN_DATE=$(echo "$RAW_DATE" | sed -E 's/([0-9]{2}:[0-9]{2}:[0-9]{2}) ([0-9]{4})/\2 \1/')
+
+  # Format into strict ISO-8601 with colon timezone offset
+  ISO_DATE=$(date -d "$CLEAN_DATE" +"%Y-%m-%dT%H:%M:%S%:z")
+
+  echo "Updating commit date to: $ISO_DATE"
+
+  # Amend the commit date (custom command for git)
+  # see ~/.gitconfig
+  git cd "$ISO_DATE" --amend --no-edit
+
+  # Attempt to continue the rebase
+  echo "Continuing rebase..."
+  if ! git rebase --continue 2>/dev/null; then
+    # Check if rebase actually finished
+    if [ ! -d ".git/rebase-merge" ] && [ ! -d ".git/rebase-apply" ]; then
+      echo "Done! Rebase completed successfully."
+      break
+    else
+      echo "Rebase stopped (likely due to a merge conflict or manual edit required)."
+      echo "Resolve any conflicts, then re-run this script to continue."
+      exit 1
+    fi
+  fi
+done

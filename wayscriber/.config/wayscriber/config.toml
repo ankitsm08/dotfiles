@@ -5,7 +5,7 @@
 # Delete this file to reset to defaults.
 
 # Internal migration provenance. Keep this value when editing the file.
-config_revision = 1
+config_revision = 2
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # KEYBINDING SETTINGS
@@ -358,7 +358,7 @@ backend = "auto"
 
 # Toolbar layout preset (simple / full)
 # Legacy values: regular / advanced
-layout_mode = "simple"
+layout_mode = "advanced"
 
 # Optional per-mode overrides for toolbar sections
 # Use true/false to override a section; omit to use the mode default.
@@ -394,16 +394,22 @@ layout_mode = "simple"
 # show_text_controls = true
 
 # Show top toolbar on startup (pinned)
-top_pinned = true
+top_pinned = false
 
 # Show side toolbar on startup (pinned)
-side_pinned = true
+side_pinned = false
 
 # Start toolbars minimized to their edge restore tabs
 # The minimize button updates these; a minimized bar always leaves a
 # clickable tab on screen to bring it back
 top_minimized = true
 side_minimized = true
+
+# Display form of the top strip restored at startup: "full" or "micro"
+# (one 44px round chip: active tool glyph + a ring in the current color).
+# The cycle keybinding updates this; a cycle-hidden strip is runtime-only
+# and comes back per top_pinned
+top_display_mode = "full"
 
 # Side-palette pane restored at startup: "draw", "canvas", "session", or "settings"
 # The overlay updates this as you switch panes
@@ -428,7 +434,7 @@ show_more_colors = false
 show_actions_section = true
 
 # Show advanced actions (undo all, delay, freeze, etc.)
-show_actions_advanced = false
+show_actions_advanced = true
 
 # Show zoom actions (zoom in/out/reset/lock)
 show_zoom_actions = true
@@ -440,10 +446,10 @@ show_pages_section = true
 show_boards_section = true
 
 # Show presets section in side toolbar
-show_presets = false
+show_presets = true
 
 # Show step undo/redo section
-show_step_section = false
+show_step_section = true
 
 # Keep text controls visible even when text is inactive
 show_text_controls = true
@@ -473,13 +479,9 @@ show_tool_preview = false
 
 # Initial toolbar offsets (layer-shell/inline)
 # Horizontal offset for the top toolbar
-top_offset = -202.0
+top_offset = 0.0
 # Vertical offset for the top toolbar (move top bar down/up)
-top_offset_y = 30.0
-# Vertical offset for the side toolbar
-side_offset = -24.0
-# Horizontal offset for the side toolbar (move side bar left/right)
-side_offset_x = 2164.0
+top_offset_y = 36.0
 
 # Force inline toolbars even when layer-shell is available
 force_inline = false

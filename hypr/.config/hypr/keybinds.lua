@@ -322,8 +322,16 @@ end)
 -- hl.bind(super .. shift .. "o", hl.dsp.workspace.move({ monitor = "u" }))
 -- hl.bind(super .. shift .. "p", hl.dsp.workspace.move({ monitor = "r" }))
 
--- Special workspace (scratchpad) using '~'
-hl.bind(super .. "code:49", hl.dsp.workspace.toggle_special("magic"))
+-- Special workspace (scratchpad) using '`'
+hl.bind(super .. "code:49", function()
+  local active_special = hl.get_active_special_workspace()
+  if active_special and active_special.name == "special:magic" then
+    hl.dispatch(hl.dsp.workspace.toggle_special("magic"))
+  end
+end)
+hl.bind(super .. alter .. "code:49", hl.dsp.workspace.toggle_special("magic"))
+hl.bind(super .. control .. "code:49", hl.dsp.workspace.toggle_special("magic"))
+hl.bind(super .. "backslash", hl.dsp.workspace.toggle_special("magic"))
 hl.bind(super .. shift .. "code:49", hl.dsp.window.move({ workspace = "special:magic", follow = false }))
 
 -- Scroll through existing workspaces with super + scroll

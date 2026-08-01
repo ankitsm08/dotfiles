@@ -94,5 +94,5 @@
   oauthTokenURL = /login/oauth/access_token
   oauthDeviceAuthURL = /login/oauth/authorize_device
 
-[includeIf "gitdir:~/dev/college"]
+[includeIf "gitdir:~/dev/college/"]
   path = ~/.gitconfig-college

@@ -48,9 +48,11 @@ return {
       {
         "<leader>gd",
         function()
-          require("inlinediff").toggle()
+          local diff = require("inlinediff")
+          diff.toggle()
+          vim.notify("Inline diff " .. (diff.enabled and "on" or "off"), vim.log.levels.INFO)
         end,
-        desc = "Toggle inline diff",
+        desc = "Toggle inline [G]it [D]iff",
       },
     },
   },

@@ -20,6 +20,7 @@ local custom_surroundings = {
 return {
   {
     "echasnovski/mini.nvim",
+    event = "VeryLazy",
     config = function()
       require("mini.ai").setup({
         mappings = {

@@ -7,7 +7,7 @@ return {
       "MunifTanjim/nui.nvim",
       "nvim-tree/nvim-web-devicons",
     },
-    lazy = false, -- neo-tree will lazily load itself
+    cmd = "Neotree", -- load on first use
     keys = {
       {
         "<leader>en",

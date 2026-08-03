@@ -5,9 +5,9 @@ return {
     opts = {},
     config = function(_, opts)
       require("persistence").setup(opts)
-      local manager = require("neo-tree.sources.manager")
-      local renderer = require("neo-tree.ui.renderer")
       local function neotree_is_open()
+        local manager = require("neo-tree.sources.manager")
+        local renderer = require("neo-tree.ui.renderer")
         return renderer.window_exists(manager.get_state("filesystem"))
       end
       vim.api.nvim_create_autocmd("User", {

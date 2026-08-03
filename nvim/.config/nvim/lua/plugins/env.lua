@@ -9,8 +9,8 @@ return {
       { "<leader>ep", "<cmd>EcologPeek<cr>", desc = "Ecolog peek variable" },
       { "<leader>es", "<cmd>EcologSelect<cr>", desc = "Switch env file" },
     },
-    -- Lazy loading is done internally
-    lazy = false,
+    -- Load after startup goes idle
+    event = "VeryLazy",
     opts = {
       integrations = {
         -- WARNING: for both cmp integrations see readme section below

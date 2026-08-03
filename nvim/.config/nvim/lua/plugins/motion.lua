@@ -49,6 +49,7 @@ return {
   },
   {
     "TheBlob42/houdini.nvim",
+    event = "InsertEnter",
     config = function()
       require("houdini").setup({
         mappings = { "jk", "kj" },

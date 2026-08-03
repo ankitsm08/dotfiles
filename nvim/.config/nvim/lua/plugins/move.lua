@@ -37,6 +37,7 @@ return {
   {
     "nvim-mini/mini.move",
     version = "*",
+    event = "VeryLazy",
     opts = {
       -- Module mappings. Use `''` (empty string) to disable one
       mappings = {

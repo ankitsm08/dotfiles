@@ -12,6 +12,9 @@ return {
           path = "/home/ank/data/workspace/obsidian/AnkVault",
         },
       },
+      frontmatter = {
+        enabled = false,
+      },
     },
   },
 }

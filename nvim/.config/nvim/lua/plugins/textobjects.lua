@@ -106,18 +106,43 @@ return {
         swap.swap_previous("@function.outer")
       end, { desc = "Swap function with previous" })
 
-      -- Repeatable motions
-      vim.keymap.set({ "n", "x", "o" }, ";", repeat_move.repeat_last_move, { desc = "Repeat last move" })
-      vim.keymap.set(
-        { "n", "x", "o" },
-        ",",
-        repeat_move.repeat_last_move_opposite,
-        { desc = "Repeat last move opposite" }
-      )
-      vim.keymap.set({ "n", "x", "o" }, "f", repeat_move.builtin_f_expr, { expr = true, desc = "Forward char" })
-      vim.keymap.set({ "n", "x", "o" }, "F", repeat_move.builtin_F_expr, { expr = true, desc = "Backward char" })
-      vim.keymap.set({ "n", "x", "o" }, "t", repeat_move.builtin_t_expr, { expr = true, desc = "Forward till char" })
-      vim.keymap.set({ "n", "x", "o" }, "T", repeat_move.builtin_T_expr, { expr = true, desc = "Backward till char" })
+      -- Repeat ; and , : flash char motion, treesitter move, or native, last used
+      local function flash_char()
+        local ok, char = pcall(require, "flash.plugins.char")
+        return ok and char or nil
+      end
+
+      local function repeat_last(key)
+        local char = flash_char()
+        -- char.char: flash's motion defaults to "f" before any search, so a
+        -- bare `;` falls through to native instead of flash's char prompt
+        if char and char.motion ~= "" and char.char then
+          char.jump(key)
+        elseif repeat_move.last_move then
+          repeat_move[key == ";" and "repeat_last_move" or "repeat_last_move_opposite"]()
+        else
+          vim.cmd("normal! " .. key)
+        end
+      end
+
+      -- Treesitter moves reset flash's char state so a stale f/F/t/T can't win
+      for _, name in ipairs({ "goto_next_start", "goto_next_end", "goto_previous_start", "goto_previous_end" }) do
+        local fn = move[name]
+        move[name] = function(...)
+          local char = flash_char()
+          if char then
+            char.motion = ""
+          end
+          return fn(...)
+        end
+      end
+
+      -- flash owns f/F/t/T; `;`/`,` repeat whichever motion was last
+      for _, key in ipairs({ ";", "," }) do
+        vim.keymap.set({ "n", "x", "o" }, key, function()
+          repeat_last(key)
+        end, { desc = "Repeat last flash char or treesitter move" })
+      end
     end,
   },
 }

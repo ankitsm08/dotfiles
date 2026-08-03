@@ -3,7 +3,15 @@ return {
     "folke/flash.nvim",
     event = "VeryLazy",
     ---@type Flash.Config
-    opts = {},
+    opts = {
+      modes = {
+        -- f/F/t/T are owned by flash (multi-line, dimmed). `;`/`,` stay with
+        -- textobjects' hybrid dispatcher (see lua/plugins/textobjects.lua).
+        char = {
+          keys = { "f", "F", "t", "T" },
+        },
+      },
+    },
     keys = {
       {
         "sj",

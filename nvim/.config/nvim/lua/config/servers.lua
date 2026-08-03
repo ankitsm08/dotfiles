@@ -34,15 +34,13 @@ local servers = {
         },
         diagnostics = {
           disable = { "missing-fields" },
+          globals = { "vim" },
         },
-        -- Make the server aware of Neovim runtime files
+        -- Libraries are managed lazily by lazydev.nvim; do not set workspace.library here.
         workspace = {
           checkThirdParty = false,
-          library = {
-            vim.env.VIMRUNTIME,
-            "${3rd}/luv/library",
-            "${3rd}/busted/library",
-          },
+          maxPreload = 20,
+          preloadFileSize = 100,
         },
         telemetry = {
           enable = false,

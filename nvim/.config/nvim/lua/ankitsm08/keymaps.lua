@@ -35,9 +35,6 @@ map("n", "<leader>xl", function()
   vim.cmd("lopen")
 end, { desc = "[X] Open [L]ocation" })
 
--- Clear search highlights
-map("n", "<leader>nh", "<cmd>nohlsearch<CR>", { desc = "Clear search highlights", silent = true })
-
 -- UI toggles
 map("n", "<leader>tn", function()
   vim.o.number = not vim.o.number

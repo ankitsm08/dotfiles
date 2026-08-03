@@ -1,29 +1,38 @@
 return {
   {
     "folke/persistence.nvim",
-    event = "BufReadPre",
-    opts = {
-      options = {
-        "blank",
-        "buffers",
-        "curdir",
-        "folds",
-        "help",
-        "tabpages",
-        "winsize",
-        "winpos",
-        "terminal",
-        "localoptions",
-      },
-    },
+    event = "VeryLazy",
+    opts = {},
     config = function(_, opts)
       require("persistence").setup(opts)
+      local manager = require("neo-tree.sources.manager")
+      local renderer = require("neo-tree.ui.renderer")
+      local function neotree_is_open()
+        return renderer.window_exists(manager.get_state("filesystem"))
+      end
       vim.api.nvim_create_autocmd("User", {
         pattern = "PersistenceSavePre",
         callback = function()
+          vim.g.NEOTREE_LAST_OPENED = neotree_is_open()
           pcall(vim.cmd, "Neotree close")
         end,
       })
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "PersistenceLoadPost",
+        callback = function()
+          if vim.g.NEOTREE_LAST_OPENED then
+            vim.g.NEOTREE_LAST_OPENED = false
+            vim.schedule(function()
+              vim.cmd("Neotree filesystem show")
+            end)
+          end
+        end,
+      })
+      if vim.fn.argc() == 0 and vim.fn.getcwd() ~= vim.env.HOME then
+        vim.schedule(function()
+          require("persistence").load()
+        end)
+      end
     end,
     keys = {
       {

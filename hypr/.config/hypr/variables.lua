@@ -11,6 +11,7 @@ end
 
 M.terminalFileManager = floatTerm("yazi")
 M.taskManager = floatTerm("btop")
+M.displayManager = floatTerm("hyprmoncfg")
 M.aiChatInterface = floatTerm("aichat")
 M.audioInterface = floatTerm("wiremix")
 M.networkInterface = floatTerm("impala")

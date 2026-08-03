@@ -75,11 +75,6 @@ hl.bind(
   hl.dsp.exec_cmd("GRAB=1 ~/.config/hypr/scripts/define.sh"),
   { description = "Define Selected Word" }
 )
-hl.bind(
-  super .. control .. "D",
-  hl.dsp.exec_cmd("~/.config/hypr/scripts/define.sh"),
-  { description = "Define Word in Clipboard" }
-)
 
 -- Soundboard
 hl.bind(
@@ -199,6 +194,7 @@ end
 -- General Bindings
 -- ==========================================================
 hl.bind(super .. "Q", hl.dsp.exec_cmd(vars.terminal))
+hl.bind(super .. control .. "D", hl.dsp.exec_cmd(vars.displayManager))
 hl.bind(super .. shift .. "M", hl.dsp.exec_cmd(vars.mediaPlayer .. " --player-operation-mode=pseudo-gui"))
 hl.bind(super .. shift .. "B", hl.dsp.exec_cmd(vars.browser))
 hl.bind(super .. alter .. "B", hl.dsp.exec_cmd(vars.browserAlt))

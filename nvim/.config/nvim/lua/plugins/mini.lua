@@ -22,18 +22,26 @@ return {
     "echasnovski/mini.nvim",
     event = "VeryLazy",
     config = function()
+      local gen_spec = require("mini.ai").gen_spec
+
       require("mini.ai").setup({
         mappings = {
           around = "a",
           inside = "i",
           around_next = "an",
           inside_next = "in",
-          around_last = "al",
-          inside_last = "il",
+          around_last = "aL",
+          inside_last = "iL",
           goto_left = "g[",
           goto_right = "g]",
         },
-        custom_surroundings = custom_surroundings,
+        custom_textobjects = {
+          a = gen_spec.treesitter({ a = "@parameter.outer", i = "@parameter.inner" }),
+          m = gen_spec.treesitter({ a = "@function.outer", i = "@function.inner" }),
+          c = gen_spec.treesitter({ a = "@class.outer", i = "@class.inner" }),
+          i = gen_spec.treesitter({ a = "@conditional.outer", i = "@conditional.inner" }),
+          l = gen_spec.treesitter({ a = "@loop.outer", i = "@loop.inner" }),
+        },
         n_lines = 200,
       })
 

@@ -14,10 +14,18 @@ map("n", "[q", function()
   end
   vim.cmd("cprev")
 end, { desc = "Quickfix prev" })
-map("n", "]l", function()
+map("n", "]j", function()
+  if vim.tbl_isempty(vim.fn.getloclist(0)) then
+    vim.notify("No location list", vim.log.levels.WARN)
+    return
+  end
   vim.cmd("lnext")
 end, { desc = "Location next" })
-map("n", "[l", function()
+map("n", "[j", function()
+  if vim.tbl_isempty(vim.fn.getloclist(0)) then
+    vim.notify("No location list", vim.log.levels.WARN)
+    return
+  end
   vim.cmd("lprev")
 end, { desc = "Location prev" })
 map("n", "<leader>xq", function()

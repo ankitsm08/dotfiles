@@ -94,7 +94,7 @@ return {
         cpp = smart_runner({
           project_check = "[ -f Makefile ] || [ -f ../Makefile ]",
           project_cmd = "make",
-          single_build = "clang++ $fileName -fsanitize=address -g -Wall -Wextra -std=c++17 -o "
+          single_build = "clang++ $fileName -fsanitize=address -g -Wall -Wextra -std=c++23 -o "
             .. TMP
             .. "/$fileNameWithoutExt",
           single_run = TMP .. "/$fileNameWithoutExt",

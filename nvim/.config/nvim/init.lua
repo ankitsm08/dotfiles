@@ -44,6 +44,12 @@ vim.api.nvim_create_autocmd("UIEnter", {
 -- Enable break indent
 vim.o.breakindent = true
 
+-- Fold settings
+vim.o.foldcolumn = "1"
+vim.o.foldlevel = 99
+vim.o.foldlevelstart = 99
+vim.o.foldenable = false -- not folded by default
+
 -- Save undo history
 vim.o.undofile = true
 

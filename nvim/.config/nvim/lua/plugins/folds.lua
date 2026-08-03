@@ -18,12 +18,5 @@ return {
         desc = "[T]oggle [F]olds",
       },
     },
-    config = function(_, opts)
-      require("ufo").setup(opts)
-      vim.o.foldcolumn = "1"
-      vim.o.foldlevel = 99
-      vim.o.foldlevelstart = 99
-      vim.o.foldenable = false
-    end,
   },
 }

@@ -21,6 +21,19 @@ return {
           { "filename", path = 1 },
           {
             function()
+              return "DEBUG"
+            end,
+            cond = function()
+              if not package.loaded["dap"] then
+                return false
+              end
+              local ok, session = pcall(require("dap").session)
+              return ok and session ~= nil
+            end,
+            padding = { left = 1, right = 1 },
+          },
+          {
+            function()
               return require("nvim-navic").get_location()
             end,
             cond = function()

@@ -92,6 +92,8 @@ local servers = {
 
 local ensure_installed = vim.tbl_keys(servers)
 vim.list_extend(ensure_installed, {
+  "codelldb", -- Used to debug C/C++/Rust/Zig
+  "debugpy", -- Used to debug Python
   "beautysh", -- Used to format shell scripts
   "clang-format", -- Used to format C/C++ code
   "eslint_d", -- Used to lint JavaScript/TypeScript code

@@ -4,10 +4,10 @@ return {
     version = "*",
     config = function()
       ---@type opencode.Opts
-      vim.o.autoread = true
       vim.g.opencode_opts = {
         -- custom config
       }
+      vim.o.autoread = true
     end,
 
     keys = {

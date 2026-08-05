@@ -1,7 +1,13 @@
 return {
   {
     "Exafunction/windsurf.vim",
-    event = "BufEnter",
+    event = "VeryLazy",
+
+    -- No UI = no completions to show
+    -- also avoids spawning the language server in headless sessions
+    cond = function()
+      return #vim.api.nvim_list_uis() > 0
+    end,
 
     config = function()
       vim.g.codeium_disable_bindings = 1

@@ -1,13 +1,12 @@
 return {
   {
-    "antosha417/nvim-lsp-file-operations",
+    "Crysthamus/nvim-file-operations",
     event = "VeryLazy",
     dependencies = {
-      "nvim-lua/plenary.nvim",
       "nvim-neo-tree/neo-tree.nvim",
     },
     config = function()
-      require("lsp-file-operations").setup()
+      require("nvim-file-operations").setup()
     end,
   },
 }

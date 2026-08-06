@@ -37,7 +37,12 @@ return {
   {
     "nvim-mini/mini.move",
     version = "*",
-    event = "VeryLazy",
+    keys = {
+      { "<M-h>", mode = { "n", "v" }, desc = "Move left" },
+      { "<M-l>", mode = { "n", "v" }, desc = "Move right" },
+      { "<M-j>", mode = { "n", "v" }, desc = "Move down" },
+      { "<M-k>", mode = { "n", "v" }, desc = "Move up" },
+    },
     opts = {
       -- Module mappings. Use `''` (empty string) to disable one
       mappings = {

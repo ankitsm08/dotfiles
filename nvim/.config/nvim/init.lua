@@ -11,11 +11,6 @@ vim.g.have_nerd_font = true
 vim.g.python3_host_prog = "python"
 
 -- [[ Setting options ]] See `:h vim.o`
--- NOTE: You can change these options as you wish!
--- For more options, you can see `:help option-list`
--- To see documentation for an option, you can use `:h 'optionname'`, for example `:h 'number'`
--- (Note the single quotes)
-
 vim.o.winborder = "rounded"
 vim.o.winblend = 10
 

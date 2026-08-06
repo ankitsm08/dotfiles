@@ -2,7 +2,9 @@ return {
   {
     "nvim-mini/mini.splitjoin",
     version = "*",
-    event = "VeryLazy",
+    keys = {
+      { "<leader>js", mode = { "n", "x" }, desc = "Toggle Split/Join" },
+    },
     opts = {
       -- Module mappings. Use `''` (empty string) to disable one.
       -- Created for both Normal and Visual modes.

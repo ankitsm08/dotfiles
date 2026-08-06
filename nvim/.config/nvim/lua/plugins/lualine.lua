@@ -1,6 +1,7 @@
 return {
   {
     "SmiteshP/nvim-navic",
+    event = "UIEnter",
     opts = {
       lsp = {
         auto_attach = true,
@@ -10,6 +11,7 @@ return {
   },
   {
     "nvim-lualine/lualine.nvim",
+    event = "UIEnter",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     opts = {
       options = {

@@ -1,8 +1,6 @@
 local servers = {
   bashls = {},
-  clangd = {
-    cmd = { "clangd", "--memory-limit=4096" },
-  },
+  clangd = {},
   css_variables = {},
   cssls = {},
   cssmodules_ls = {},

@@ -82,7 +82,7 @@ return {
         default = { "lsp", "buffer", "path", "snippets", "lazydev", "ecolog" },
         providers = {
           lazydev = { name = "lazydev", module = "lazydev.integrations.blink", score_offset = 100 },
-          ecolog = { name = "ecolog", module = "ecolog.integrations.cmp.blink_cmp" },
+          ecolog = { name = "ecolog", module = "ecolog.integrations.cmp.blink_cmp", optional = true },
         },
       },
 

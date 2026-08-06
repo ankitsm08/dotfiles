@@ -101,6 +101,13 @@ return {
   },
   {
     "windwp/nvim-ts-autotag",
+    -- Only relevant in markup-ish filetypes; load when one is opened
+    ft = {
+      "html", "xml", "heex", "svelte", "templ", "rust", "glimmer",
+      "typescriptreact", "javascriptreact",
+      "vue", "astro", "markdown", "php", "eruby", "liquid", "twig",
+      "blade", "elixir", "handlebars", "hbs",
+    },
     opts = {},
   },
 }

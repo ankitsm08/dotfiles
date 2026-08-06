@@ -40,9 +40,6 @@ return {
 
       -- Useful status updates for LSP.
       { "j-hui/fidget.nvim", opts = {} },
-
-      -- Allows extra capabilities provided by blink.cmp
-      "saghen/blink.cmp",
     },
     config = function()
       --  This function gets run when an LSP attaches to a particular buffer.
@@ -218,26 +215,60 @@ return {
       end, { desc = "Cycle diagnostics inline" })
 
       -- LSP servers and clients are able to communicate to each other what features they support.
-      --  By default, Neovim doesn't support everything that is in the LSP specification.
-      --  When you add blink.cmp, luasnip, etc. Neovim now has *more* capabilities.
-      --  So, we create new capabilities with blink.cmp, and then broadcast that to the servers.
-      local capabilities = require("blink.cmp").get_lsp_capabilities()
+      -- By default, Neovim doesn't support everything that is in the LSP specification.
+      -- So we create capabilities (mirroring blink.cmp's `get_lsp_capabilities()`) and
+      -- broadcast that to the servers via a global `vim.lsp.config("*")` default.
+      -- Note: this avoids requiring blink.cmp here, so it can stay lazy on InsertEnter.
+      local capabilities = {
+        textDocument = {
+          completion = {
+            completionItem = {
+              snippetSupport = true,
+              commitCharactersSupport = false,
+              documentationFormat = { "markdown", "plaintext" },
+              deprecatedSupport = true,
+              preselectSupport = false,
+              tagSupport = { valueSet = { 1 } },
+              insertReplaceSupport = true,
+              resolveSupport = {
+                properties = {
+                  "documentation",
+                  "detail",
+                  "additionalTextEdits",
+                  "command",
+                  "data",
+                },
+              },
+              insertTextModeSupport = {
+                valueSet = { 1 },
+              },
+              labelDetailsSupport = true,
+            },
+            completionList = {
+              itemDefaults = {
+                "commitCharacters",
+                "editRange",
+                "insertTextFormat",
+                "insertTextMode",
+                "data",
+              },
+            },
+            contextSupport = true,
+            insertTextMode = 1,
+          },
+        },
+      }
+      vim.lsp.config("*", { capabilities = capabilities })
 
       local servers = require("config.servers")
-
+      for server_name, server_opts in pairs(servers) do
+        vim.lsp.config(server_name, server_opts)
+      end
+      -- Enable installed LSP servers automatically (started lazily on FileType).
+      -- Per-server opts above are merged into `vim.lsp.config`, which
+      -- automatic_enable then activates for all mason-installed servers.
       require("mason-lspconfig").setup({
-        ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
-        automatic_installation = false,
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for ts_ls)
-            server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-            require("lspconfig")[server_name].setup(server)
-          end,
-        },
+        ensure_installed = {}, -- installs are handled by mason-tool-installer (config.servers)
       })
     end,
   },

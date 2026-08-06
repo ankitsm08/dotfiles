@@ -9,8 +9,10 @@ return {
       { "<leader>ep", "<cmd>EcologPeek<cr>", desc = "Ecolog peek variable" },
       { "<leader>es", "<cmd>EcologSelect<cr>", desc = "Switch env file" },
     },
-    -- Load after startup goes idle
-    event = "VeryLazy",
+    -- Must init before blink instantiates the `ecolog` provider on any
+    -- completion (it needs M.setup to run to populate its providers).
+    -- First insert is still later than startup, so this stays fast.
+    event = "InsertEnter",
     opts = {
       integrations = {
         -- WARNING: for both cmp integrations see readme section below

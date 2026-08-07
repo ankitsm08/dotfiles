@@ -1,0 +1,4 @@
+# obsidian-bridge secrets (Local REST API)
+obsidian.api_key
+obsidian.crt
+

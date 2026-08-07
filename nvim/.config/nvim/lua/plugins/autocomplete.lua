@@ -32,6 +32,9 @@ return {
         opts = {},
       },
       "folke/lazydev.nvim",
+      -- Must load before blink so ecolog's blink_cmp integration
+      -- has populated its providers before blink instantiates them
+      "ph1losof/ecolog.nvim",
     },
     --- @module 'blink.cmp'
     --- @type blink.cmp.Config
@@ -82,7 +85,7 @@ return {
         default = { "lsp", "buffer", "path", "snippets", "lazydev", "ecolog" },
         providers = {
           lazydev = { name = "lazydev", module = "lazydev.integrations.blink", score_offset = 100 },
-          ecolog = { name = "ecolog", module = "ecolog.integrations.cmp.blink_cmp", optional = true },
+          ecolog = { name = "ecolog", module = "ecolog.integrations.cmp.blink_cmp" },
         },
       },
 

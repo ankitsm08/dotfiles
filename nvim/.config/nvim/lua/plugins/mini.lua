@@ -1,20 +1,20 @@
 local custom_surroundings = {
-  ["s"] = { output = { left = "[", right = "]" } }, -- [s]quare bracket
-  ["B"] = { output = { left = "[", right = "]" } }, -- [b]ig bracket
-  ["c"] = { output = { left = "{", right = "}" } }, -- [c]urly braces
-  ["C"] = { output = { left = "{{", right = "}}" } }, -- double [c|C]urly braces
-  ["Q"] = { output = { left = "'", right = "'" } }, -- [q]uote
-  ["a"] = { output = { left = "'", right = "'" } }, -- [a]postrophe
-  ["i"] = { output = { left = "_", right = "_" } }, -- [i]talic
-  ["u"] = { output = { left = "_", right = "_" } }, -- [u]nderscore
-  ["p"] = { output = { left = "%", right = "%" } }, -- [p]ercent
-  ["l"] = { output = { left = "<u>", right = "</u>" } }, -- under[l]ine
-  ["d"] = { output = { left = "**", right = "**" } }, -- bol[d]
-  ["D"] = { output = { left = '"""\n', right = '\n"""' } }, -- docstring
-  ["k"] = { output = { left = "`", right = "`" } }, -- [c|k]ode
-  ["K"] = { output = { left = "```\n", right = "\n```" } }, -- [c|K]ode block
-  ["m"] = { output = { left = "$", right = "$" } }, -- [m]ath
-  ["M"] = { output = { left = "$$", right = "$$" } }, -- [m|M]ath block
+  ["s"] = { input = { "%[().-()%]" }, output = { left = "[", right = "]" } }, -- [s]quare bracket
+  ["B"] = { input = { "%[().-()%]" }, output = { left = "[", right = "]" } }, -- [b]ig bracket
+  ["c"] = { input = { "{().-()}" }, output = { left = "{", right = "}" } }, -- [c]urly braces
+  ["C"] = { input = { "{{().-()}}" }, output = { left = "{{", right = "}}" } }, -- double [c|C]urly braces
+  ["Q"] = { input = { "'().-()'" }, output = { left = "'", right = "'" } }, -- [q]uote
+  ["a"] = { input = { "'().-()'" }, output = { left = "'", right = "'" } }, -- [a]postrophe
+  ["i"] = { input = { "%_().-()%_" }, output = { left = "_", right = "_" } }, -- [i]talic
+  ["u"] = { input = { "%_().-()%_" }, output = { left = "_", right = "_" } }, -- [u]nderscore
+  ["p"] = { input = { "%%().-()%%" }, output = { left = "%", right = "%" } }, -- [p]ercent
+  ["l"] = { input = { "<u>().-()</u>" }, output = { left = "<u>", right = "</u>" } }, -- under[l]ine
+  ["d"] = { input = { "%*%*().-()%*%*" }, output = { left = "**", right = "**" } }, -- bol[d]
+  ["D"] = { input = { '"""().-\n()"""' }, output = { left = '"""\n', right = '\n"""' } }, -- docstring
+  ["k"] = { input = { "`().-()`" }, output = { left = "`", right = "`" } }, -- [c|k]ode
+  ["K"] = { input = { "```\n().-\n()```" }, output = { left = "```\n", right = "\n```" } }, -- [c|K]ode block
+  ["m"] = { input = { "%$().-()%$" }, output = { left = "$", right = "$" } }, -- [m]ath
+  ["M"] = { input = { "%$%$().-()%$%$" }, output = { left = "$$", right = "$$" } }, -- [m|M]ath block
 }
 
 return {

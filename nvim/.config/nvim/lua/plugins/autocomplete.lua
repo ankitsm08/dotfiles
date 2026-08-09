@@ -70,11 +70,15 @@ return {
 
       completion = {
         menu = {
-          auto_show_delay_ms = 10,
+          auto_show_delay_ms = 25,
+          border = "rounded",
+          min_width = 16,
+          max_height = 8,
         },
         documentation = {
           auto_show = true,
-          auto_show_delay_ms = 50,
+          auto_show_delay_ms = 300,
+          update_delay_ms = 300,
           window = {
             border = "rounded",
           },
@@ -86,6 +90,11 @@ return {
         providers = {
           lazydev = { name = "lazydev", module = "lazydev.integrations.blink", score_offset = 100 },
           ecolog = { name = "ecolog", module = "ecolog.integrations.cmp.blink_cmp" },
+          -- Keep lightbag providers capped and keyword-gated so typing stays crisp
+          buffer = { max_items = 20, min_keyword_length = 2 },
+          path = { max_items = 10 },
+          snippets = { max_items = 30 },
+          lsp = { max_items = 50 },
         },
       },
 

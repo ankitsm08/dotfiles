@@ -15,6 +15,22 @@ local custom_surroundings = {
   ["K"] = { input = { "```\n().-\n()```" }, output = { left = "```\n", right = "\n```" } }, -- [c|K]ode block
   ["m"] = { input = { "%$().-()%$" }, output = { left = "$", right = "$" } }, -- [m]ath
   ["M"] = { input = { "%$%$().-()%$%$" }, output = { left = "$$", right = "$$" } }, -- [m|M]ath block
+  ["F"] = {
+    input = function()
+      local cmd = MiniSurround.user_input("LaTeX command")
+      if cmd == nil or cmd == "" then
+        return nil
+      end
+      return { "\\" .. vim.pesc(cmd) .. "{().-()}" }
+    end,
+    output = function()
+      local cmd = MiniSurround.user_input("LaTeX command")
+      if cmd == nil or cmd == "" then
+        return nil
+      end
+      return { left = "\\" .. cmd .. "{", right = "}" }
+    end,
+  }, -- latex command wrapper
 }
 
 return {

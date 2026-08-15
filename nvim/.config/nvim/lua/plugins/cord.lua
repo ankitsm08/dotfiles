@@ -113,6 +113,15 @@ return {
         state = "Taking a break!",
         tooltip = "😴",
       },
+      extensions = {
+        persistent_timer = {
+          scope = "global", -- 'workspace', 'file', 'filetype', or 'global'
+          mode = "all", -- 'all', 'active', or 'idle'
+          file = vim.fn.stdpath("data") .. "/cord/extensions/persistent_timer/data.json",
+          save_on = { "exit", "focus_change", "periodic" },
+          save_interval = 30,
+        },
+      },
     },
   },
 }

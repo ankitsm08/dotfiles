@@ -108,7 +108,7 @@ hl.bind(
 hl.bind(super .. shift .. "Q", hl.dsp.exec_cmd("~/.config/hypr/scripts/qr.sh"), { description = "Scan QR & Barcodes" })
 
 -- Screen Annotation
-hl.bind(super .. "A", hl.dsp.exec_cmd("pkill -SIGUSR1 wayscribe"), { description = "Toggle Screen Annotation" })
+hl.bind(super .. "A", hl.dsp.exec_cmd("wayscriber --daemon-toggle"), { description = "Toggle Screen Annotation" })
 
 -- Screen Recording
 hl.bind(super .. "R", hl.dsp.exec_cmd("~/.local/bin/screenrec toggle"), { description = "Toggle Screen Recording" })

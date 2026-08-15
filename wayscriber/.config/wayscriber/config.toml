@@ -2,10 +2,29 @@
 # Location: ~/.config/wayscriber/config.toml
 #
 # All settings are optional. If not specified, defaults will be used.
-# Delete this file to reset to defaults.
+#
+# Every value here is a configured default: the value Wayscriber starts from.
+# Edit them in the graphical configurator (`wayscriber-configurator`, or F11
+# from the overlay) or by hand. Two things write this file: the configurator's
+# Save, and the overlay's three narrow editors — shortcut edit/unbind/reset,
+# preset save/clear, and quick-color recoloring — each of which rewrites only
+# its own key at the moment you confirm the edit and copies the previous file
+# to a timestamped .bak. Running, using, and quitting Wayscriber never changes
+# it on its own, and a preference you flip from the overlay applies to that run
+# only.
+#
+# Overlay changes to toolbar pins, minimized/pane/collapsed state, toolbar item
+# visibility/order, and board pins are direct interaction state, stored
+# separately in $XDG_DATA_HOME/wayscriber/runtime-ui.toml (normally
+# ~/.local/share/wayscriber/runtime-ui.toml). Reset those generated runtime
+# preferences from the overlay Settings panel; do not hand-edit them.
+#
+# Delete this config file only to reset authored settings to built-in defaults.
 
-# Internal migration provenance. Keep this value when editing the file.
-config_revision = 2
+# Which generation of shipped keybinding defaults this file was written
+# against. Loading never changes it; the configurator offers a reviewed update
+# when it is behind. Keep this value when editing the file.
+config_revision = 3
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # KEYBINDING SETTINGS
@@ -18,7 +37,7 @@ config_revision = 2
 # Each action can have multiple keybindings (e.g., ["+", "="])
 
 # Exit overlay (or cancel current action)
-exit = ["Escape", "Ctrl+Q", "Q"]
+exit = ["Escape", "Ctrl+Q"]
 
 # Enter text mode
 enter_text_mode = ["T"]
@@ -92,6 +111,10 @@ select_step_marker_tool = []
 select_eraser_tool = ["D"]
 # Toggle eraser behavior mode
 toggle_eraser_mode = ["Ctrl+Shift+E"]
+# Select the spotlight tool (unbound by default)
+select_spotlight_tool = []
+# Step the blur tool through blur/pixelate/secure/black-out (unbound by default)
+cycle_blur_style = []
 select_line_tool = []
 select_rect_tool = []
 select_ellipse_tool = []
@@ -101,7 +124,7 @@ select_rhombus_tool = []
 select_regular_polygon_tool = []
 select_freeform_polygon_tool = []
 select_arrow_tool = []
-select_blur_tool = ["Shift+V"]
+select_blur_tool = []
 select_highlight_tool = []
 toggle_highlight_tool = ["Ctrl+Alt+H"]
 
@@ -154,11 +177,28 @@ toggle_quick_help = ["Shift+F1"]
 # Toggle status bar
 toggle_status_bar = ["F12", "F4"]
 
-# Toggle toolbars
-toggle_toolbar = ["F2", "F9"]
+# Show/hide the floating board/page badge (unbound; also in the command palette)
+toggle_floating_badge = []
+
+# Show/hide the bottom-right zoom chip (unbound; also in the command palette)
+toggle_zoom_chip = []
+
+# Focus mode: hide all UI chrome at once, press again to restore exactly
+# (unbound; also in the command palette)
+toggle_focus_mode = []
+
+# Toggle the unified top toolbar
+toggle_toolbar = ["F9"]
+
+# Cycle the top toolbar's display: full strip -> micro chip -> hidden
+# (F2 used to toggle the toolbars; the cycle still reaches hidden)
+cycle_toolbar_display = ["F2"]
 
 # Toggle click highlight
 toggle_click_highlight = ["Ctrl+Shift+H"]
+
+# Toggle the input HUD (on-screen keystrokes and clicks)
+toggle_input_hud = ["Ctrl+Shift+K"]
 
 # Toggle presenter mode
 toggle_presenter_mode = ["Ctrl+Shift+M"]
@@ -193,8 +233,14 @@ open_context_menu = ["Shift+F10", "Menu"]
 # Launch the desktop configurator (requires wayscriber-configurator)
 open_configurator = ["F11"]
 
+# Open the About window (version, links, update status). Unbound by default;
+# also available from the toolbar chrome, the Settings popover, the help
+# overlay footer, and the command palette. Opening it closes the overlay,
+# because About is a normal window and the overlay draws above those.
+open_about = []
+
 # Toggle command palette
-toggle_command_palette = ["Ctrl+K"]
+toggle_command_palette = ["Ctrl+K", "Ctrl+Shift+P"]
 
 # Color selection shortcuts
 set_color_red = ["R"]
@@ -209,7 +255,7 @@ set_color_black = ["K"]
 pick_screen_color = ["I"]
 
 # Screenshot shortcuts
-capture_full_screen = ["Ctrl+Shift+P"]
+capture_full_screen = ["Ctrl+Alt+F"]
 capture_active_window = ["Ctrl+Shift+O"]
 capture_selection = ["Ctrl+Shift+I"]
 
@@ -228,6 +274,10 @@ export_all_boards_pdf_file = []
 
 # Open the most recent capture folder
 open_capture_folder = ["Ctrl+Alt+O"]
+
+# Select a screen region and copy the text recognized in it (needs Tesseract).
+# Unbound by default: "O" is already the orange quick color.
+copy_text_from_screen = []
 
 # Toggle frozen mode
 toggle_frozen_mode = ["Ctrl+Shift+F"]
@@ -250,11 +300,11 @@ save_preset_2 = ["Shift+2"]
 save_preset_3 = ["Shift+3"]
 save_preset_4 = ["Shift+4"]
 save_preset_5 = ["Shift+5"]
-clear_preset_1 = []
-clear_preset_2 = []
-clear_preset_3 = []
-clear_preset_4 = []
-clear_preset_5 = []
+clear_preset_1 = ["Ctrl+1"]
+clear_preset_2 = ["Ctrl+2"]
+clear_preset_3 = ["Ctrl+3"]
+clear_preset_4 = ["Ctrl+4"]
+clear_preset_5 = ["Ctrl+5"]
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Keybinding Examples
@@ -290,12 +340,60 @@ clear_preset_5 = []
 icon_style = "auto"
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# UPDATE NOTIFICATIONS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[updates]
+# Wayscriber never installs updates. This section only controls whether it tells
+# you that a newer release exists and points at the instructions for your
+# install method (https://wayscriber.com/docs/getting-started/updating.html).
+
+# Ask https://wayscriber.com/latest.json whether a newer release exists.
+# No Wayscriber or user identifier is sent, and the client version is suppressed.
+# Set WAYSCRIBER_DISABLE_UPDATE_CHECK=1 to override this for a single run.
+# If this file ever fails to parse, the check is skipped entirely rather than
+# falling back to "on".
+check = true
+
+# Show one desktop notification per release. With this off, the notice still
+# appears in the About window and the tray menu.
+notify = true
+
+# Hours between checks (minimum 1, maximum 720).
+interval_hours = 24
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # UI SETTINGS
 # ═══════════════════════════════════════════════════════════════════════════════
 
 [ui]
-# Show status bar with current color/thickness/tool
+# Overlay chrome theme
+# Options: "auto", "dark", "light" ("auto" currently resolves to dark;
+# "light" takes effect as overlay surfaces adopt the runtime theme)
+theme = "auto"
+
+# Reduce UI motion (disable animations)
+# Options: "auto", "on", "off". "on" disables UI animations. "auto" is
+# reserved for a future desktop-portal (system preference) query and
+# currently behaves like "off" (full motion).
+reduced_motion = "auto"
+
+# Show the status bar and its configured contents
 show_status_bar = true
+
+# Allow clicking status bar segments to open their related controls;
+# set false for a display-only status bar whose clicks pass through
+status_bar_interactive = true
+
+# Status-bar contents. Each item can be hidden independently. Visible items
+# keep this fixed order; narrow layouts may compact labels and temporarily
+# shed items without changing these choices. Mode badges such as
+# FROZEN/ZOOM/PAN are separate.
+# The active output appears only when an output label is available.
+active_output_badge = true
+
+# Selection dimensions appear only while one or more shapes are selected.
+show_status_selection_info = true
 
 # Show board label in the status bar
 show_status_board_badge = true
@@ -303,7 +401,34 @@ show_status_board_badge = true
 # Show page counter in the status bar
 show_status_page_badge = true
 
-# Show the floating board/page badge even when the status bar is visible
+# Show the current color dot
+show_status_color = true
+
+# Show the active tool name
+show_status_tool = true
+
+# Show the active tool size as a separate segment
+show_status_size = true
+
+# Show transient text/highlight context indicators when applicable
+show_status_context_indicators = true
+
+# Show a clickable status-bar hint chip (e.g. "F9 Toolbar") while every
+# toolbar surface is hidden; set false if you run toolbar-less on purpose
+show_toolbar_hint = true
+
+# Show the Help shortcut segment
+show_status_help = true
+
+# Show the About/version segment
+show_status_about = true
+
+# Master visibility for the floating board/page badge. The
+# toggle_floating_badge palette/keyboard action flips it for the current run
+# only; this is the default it starts from.
+show_floating_badge = true
+
+# Also show the floating board/page badge when the status bar is visible
 show_floating_badge_always = false
 
 # Show a "FROZEN" badge when frozen mode is active
@@ -319,6 +444,10 @@ help_overlay_context_filter = true
 # Show compositor capabilities warning toast each time the overlay starts
 show_capabilities_warning = true
 
+# Show automatic first-run guidance, discovery tips, and shortcut coaching.
+# The guided tour remains available manually when this is false.
+show_onboarding_hints = true
+
 # Command palette action toast duration (ms)
 command_palette_toast_duration_ms = 1500
 
@@ -328,9 +457,6 @@ command_palette_toast_duration_ms = 1500
 
 # Enable output-cycling shortcuts on layer-shell compositors.
 multi_monitor_enabled = true
-
-# Show active output label in the status bar.
-active_output_badge = true
 
 # Request fullscreen for the GNOME fallback overlay. Disable if fullscreen appears opaque.
 #xdg_fullscreen = false
@@ -344,7 +470,7 @@ active_output_badge = true
 radial_menu_mouse_binding = "middle"
 
 # ───────────────────────────────────────────────────────────────────────────────
-# Floating Toolbars (Press F2/F9 to toggle)
+# Floating Toolbar (F9 toggles; F2 cycles full -> micro -> hidden)
 # ───────────────────────────────────────────────────────────────────────────────
 
 [ui.toolbar]
@@ -356,8 +482,8 @@ radial_menu_mouse_binding = "middle"
 # Env override: WAYSCRIBER_TOOLBAR_BACKEND
 backend = "auto"
 
-# Toolbar layout preset (simple / full)
-# Legacy values: regular / advanced
+# Toolbar layout preset: "simple", "regular" (the default), or "advanced"
+# "full" is accepted as a legacy alias for "regular"
 layout_mode = "advanced"
 
 # Optional per-mode overrides for toolbar sections
@@ -394,34 +520,38 @@ layout_mode = "advanced"
 # show_text_controls = true
 
 # Show top toolbar on startup (pinned)
-top_pinned = false
+# These are the authored defaults. The pin buttons and the toolbar toggle
+# keybinding update the remembered pinned state in runtime-ui.toml, which
+# overrides these values; editing a value again takes over from that saved
+# choice
+top_pinned = true
 
-# Show side toolbar on startup (pinned)
-side_pinned = false
-
-# Start toolbars minimized to their edge restore tabs
-# The minimize button updates these; a minimized bar always leaves a
+# Start the top toolbar minimized to its edge restore tab
+# The minimize button updates this; a minimized bar always leaves a
 # clickable tab on screen to bring it back
-top_minimized = true
-side_minimized = true
+top_minimized = false
 
 # Display form of the top strip restored at startup: "full" or "micro"
 # (one 44px round chip: active tool glyph + a ring in the current color).
-# The cycle keybinding updates this; a cycle-hidden strip is runtime-only
-# and comes back per top_pinned
+# This is the authored default. The cycle keybinding and the micro chip
+# persist their choice to runtime-ui.toml instead, and editing this value
+# again takes over from that saved choice. A cycle-hidden strip is
+# runtime-only and comes back per top_pinned
 top_display_mode = "full"
 
-# Side-palette pane restored at startup: "draw", "canvas", "session", or "settings"
-# The overlay updates this as you switch panes
-side_active_pane = "canvas"
-
-# Side-palette sections collapsed to their header row
-# The overlay updates this as you collapse/expand sections
-collapsed_sections = []
+# The unified top toolbar is the only layout. Drawing properties live in
+# the top strip's contextual style pill; canvas management in the status
+# HUD, board picker, and Canvas overflow popover; Session/Settings in
+# popovers from the top strip's overflow menu. Older keys such as
+# side_layout, side_pinned, side_minimized, side_active_pane,
+# collapsed_sections, side_offset(_x), show_settings_section, and the
+# retired items.order lists (side_sections, actions, pages, boards,
+# presets, tool_options, sessions) remain readable and are preserved on
+# save, but they no longer affect the running overlay.
 
 # Use icons instead of text labels in toolbars
 # Icons are more compact; text labels are more explicit
-use_icons = false
+use_icons = true
 
 # Scale factor for toolbar UI (icons + layout)
 scale = 1.0
@@ -430,14 +560,25 @@ scale = 1.0
 # When enabled, displays additional color options beyond the basic 8
 show_more_colors = false
 
-# Show basic actions (undo/redo/clear) in side toolbar
+# Show basic actions (undo/redo/clear) in the Canvas overflow popover
 show_actions_section = true
 
 # Show advanced actions (undo all, delay, freeze, etc.)
-show_actions_advanced = true
+show_actions_advanced = false
 
 # Show zoom actions (zoom in/out/reset/lock)
 show_zoom_actions = true
+
+# When the bottom-right zoom chip is shown
+# Options: "always" (default; the chip is also the mouse entry point for
+# zooming), "while-zoomed" (only while zoom is active — keeps the corner
+# clean at 100%; zooming still starts via keyboard/scroll bindings)
+zoom_chip_display = "always"
+
+# Master visibility for the bottom-right zoom chip. The toggle_zoom_chip
+# palette/keyboard action flips it for the current run only; this is the
+# default it starts from.
+show_zoom_chip = true
 
 # Show page controls section (prev/next/new/dup/del)
 show_pages_section = true
@@ -445,24 +586,20 @@ show_pages_section = true
 # Show board controls section (prev/next/new/del)
 show_boards_section = true
 
-# Show presets section in side toolbar
+# Show presets island in the top strip
 show_presets = true
 
 # Show step undo/redo section
-show_step_section = true
+show_step_section = false
 
 # Keep text controls visible even when text is inactive
 show_text_controls = true
 
-# Deprecated compatibility mirror. Settings navigation is always reachable;
-# this value is preserved for older Wayscriber versions but is otherwise ignored.
-show_settings_section = true
-
-# Show timing delay sliders in side toolbar
+# Show timing delay sliders in the Canvas popover's Step section
 # Allows configuring delayed undo/redo all timing
 show_delay_sliders = false
 
-# Show marker opacity slider in side toolbar even when the marker tool isn't active
+# Keep the marker opacity control available in the style pill even when the marker tool isn't active
 # Enable to keep marker transparency control visible at all times
 show_marker_opacity_section = false
 
@@ -477,23 +614,31 @@ show_preset_toasts = true
 # Show cursor tool preview bubble near the pointer
 show_tool_preview = false
 
-# Initial toolbar offsets (layer-shell/inline)
+# Authored default top-toolbar offsets (layer-shell/inline). Dragging the
+# strip persists its position to runtime-ui.toml instead of rewriting these;
+# editing these values again takes over from the saved drag.
 # Horizontal offset for the top toolbar
 top_offset = 0.0
 # Vertical offset for the top toolbar (move top bar down/up)
-top_offset_y = 36.0
+top_offset_y = 0.0
 
 # Force inline toolbars even when layer-shell is available
 force_inline = false
 
 # Hold this modifier chord while clicking a bindable toolbar control to edit
-# its shortcut. Values: "ctrl_shift", "ctrl_alt", "shift_alt",
+# its shortcut. The captured chord applies immediately and is written back to
+# that action's [keybindings] entry here, with the previous file copied to a
+# timestamped .bak. A chord another action already owns is refused and nothing
+# is written. Values: "ctrl_shift", "ctrl_alt", "shift_alt",
 # "ctrl_shift_alt", or "disabled".
 rebind_modifier = "ctrl_shift"
 
 [ui.toolbar.items]
 # Checked in the configurator means shown; IDs listed here are hidden.
 # The screenshot toolbar button is hidden by default.
+# Copy text (OCR) is hidden by a built-in baseline instead of by this list,
+# so upgrading a config written before it existed cannot reveal it; enable it
+# through toolbar customization, which records an entry in `shown` below.
 # Section-level ids (side.group.*) act as explicit overrides that beat the
 # layout-mode baseline and survive mode switches.
 hidden = ["top.utility.screenshot"]
@@ -506,8 +651,8 @@ shown = []
 [ui.toolbar.items.order]
 # Optional order overrides. Empty lists use the built-in order.
 # Known IDs omitted from a non-empty list are appended in the default order.
-# Side section ordering uses runtime block representatives; detailed sections
-# such as eraser-mode, polygon-sides, and font remain visibility-only IDs.
+# Historically named side.* item IDs still customize top-toolbar controls
+# (Canvas/Session/Settings popovers, section visibility); do not rename them.
 top_tools = [
   "top.tool.select",
   "top.tool.pen",
@@ -524,23 +669,9 @@ top_controls = [
   "top.utility.text",
   "top.utility.sticky-note",
   "top.utility.screenshot",
+  "top.utility.ocr",
   "top.utility.clear-canvas",
   "top.utility.highlight",
-]
-side_sections = [
-  "side.group.colors",
-  "side.group.presets",
-  "side.group.thickness",
-  "side.group.arrow-labels",
-  "side.group.step-markers",
-  "side.group.marker-opacity",
-  "side.group.text-size",
-  "side.group.actions",
-  "side.group.boards",
-  "side.group.pages",
-  "side.group.step-undo",
-  "side.group.session",
-  "side.group.settings",
 ]
 
 # ───────────────────────────────────────────────────────────────────────────────
@@ -549,10 +680,10 @@ side_sections = [
 
 [ui.status_bar_style]
 # Font size for status bar text
-font_size = 14.0
+font_size = 21.0
 
 # Padding around status bar text
-padding = 4.0
+padding = 15.0
 
 # Background color [R, G, B, A] (0.0-1.0 range)
 # Default: semi-transparent black (85% opaque for visibility)
@@ -563,7 +694,7 @@ bg_color = [0.118, 0.118, 0.18, 0.2]
 text_color = [0.804, 0.839, 0.957, 1.0]
 
 # Color indicator dot radius
-dot_radius = 4.0
+dot_radius = 6.0
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Click Highlight (visual feedback for mouse clicks)
@@ -599,6 +730,50 @@ use_pen_color = true
 # Set false to keep the current click highlight state on light mode entry.
 force_in_light_mode = true
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Input HUD (on-screen keystrokes and clicks, for demos and screencasts)
+# ─────────────────────────────────────────────────────────────────────────────
+
+[ui.input_hud]
+# Start with the input HUD enabled when the overlay launches
+enabled = false
+
+# Input source:
+#   "auto"    - system-wide capture when available, else overlay-only (default)
+#   "overlay" - never reads /dev/input; shows only what Wayscriber receives
+#   "system"  - requires system-wide capture; falls back to overlay with a
+#               warning toast. Needs a build with the `input-monitor` feature
+#               and read access to /dev/input (usually `input` group
+#               membership). System mode sees every keystroke on the seat,
+#               including passwords typed into other apps.
+mode = "auto"
+
+# Screen anchor for the chip row: top-left | top-center | top-right |
+# center-left | center | center-right |
+# bottom-left | bottom-center | bottom-right
+position = "bottom-center"
+
+# Show mouse buttons and scroll wheel
+show_mouse = true
+
+# Show taps of bare modifiers (Ctrl, Shift, Alt) as their own chips
+show_bare_modifiers = true
+
+# How long a chip stays after its last press, before fading (200 - 30000 ms)
+display_ms = 1600
+
+# Fade-out duration (0 - 5000 ms)
+fade_ms = 350
+
+# Maximum number of simultaneous chips (1 - 16)
+max_entries = 6
+
+# Coalesce immediate repeats into a single chip with a xN counter
+combine_repeats = true
+
+# Chip label size in points (6 - 72)
+font_size = 18.0
+
 [ui.context_menu]
 # Enable right-click / keyboard context menus
 enabled = true
@@ -613,11 +788,18 @@ hide_status_bar = true
 hide_toolbars = true
 hide_tool_preview = true
 
+# What hide_toolbars does to the top strip: "hidden" removes it entirely,
+# "micro" collapses it to the 44px micro chip
+toolbar_mode = "hidden"
+
 # Close the help overlay when entering presenter mode
 close_help_overlay = true
 
 # Force click highlights on while presenting
 enable_click_highlight = true
+
+# Force the input HUD on while presenting
+enable_input_hud = false
 
 # Tool behavior while presenting:
 # "keep" / "force-highlight" / "force-highlight-locked"
@@ -685,7 +867,10 @@ pan_enabled = true
 # Show the pan hint in the status bar or as a floating badge
 show_pan_badge = true
 
-# Persist runtime edits (rename/background) back to config
+# Deprecated no-op, kept so older files still load without a warning.
+# Board renames, recolors, additions, and deletions belong to the running
+# session; the [[boards.items]] list below is the set of templates a new
+# session starts from. This key is ignored and will be removed.
 persist_customizations = true
 
 # Default board id on startup
@@ -701,6 +886,7 @@ persist = true
 id = "whiteboard"
 name = "Whiteboard"
 background = { rgb = [0.937, 0.945, 0.961] }
+# Tuned black #241F31; the built-in default bit-matches the "black" quick color
 default_pen_color = { rgb = [0.298, 0.31, 0.412] }
 auto_adjust_pen = true
 
@@ -828,7 +1014,7 @@ max_shapes_per_frame = 10000
 # max_persisted_undo_depth = 200
 
 # Maximum session file size (in megabytes); image paste and autosave warn near this cap
-max_file_size_mb = 10
+max_file_size_mb = 50
 
 # Compression mode: "auto", "on", or "off"
 compress = "auto"
@@ -846,18 +1032,26 @@ backup_retention = 1
 [drawing]
 # Default pen color
 # Options: "red", "green", "blue", "yellow", "orange", "pink", "white", "black"
-# Or #RRGGBB hex: "#FFB3BA"
-# Or RGB array: [255, 0, 0]
+# (named colors resolve to the tuned quick color palette, e.g. "red" = #F5333F)
+# Or #RRGGBB hex: "#FFB3BA", or #RRGGBBAA for alpha: "#FFB3BA80"
+# Or RGB array: [255, 0, 0], or RGBA array: [255, 0, 0, 128]
 default_color = "#CDD6F4"
 
 # Default pen thickness in pixels (1.0 - 50.0)
-default_thickness = 8.0
+default_thickness = 3.0
 
 # Default eraser size in pixels (1.0 - 50.0)
-default_eraser_size = 48.0
+default_eraser_size = 12.0
 
 # Default eraser mode: "brush" (pixel erase) or "stroke" (erase whole stroke)
 default_eraser_mode = "brush"
+
+# How the blur tool obscures its region by default
+# "gaussian"  - softens detail (historical behavior)
+# "pixelate"  - coarse mosaic of averaged blocks; block size follows the tool size
+# "secure"    - collapses the region to one averaged color; no detail survives
+# "black-out" - opaque black fill; needs no captured background
+default_blur_style = "gaussian"
 
 # Default marker opacity multiplier (0.05 - 0.90). Multiplies the current color alpha.
 marker_opacity = 0.32
@@ -869,7 +1063,7 @@ default_fill_enabled = false
 polygon_sides = 5
 
 # Default font size for text mode (8.0 - 72.0)
-default_font_size = 24.0
+default_font_size = 32.0
 
 # Hit-test tolerance in pixels (1.0 - 20.0)
 hit_test_tolerance = 6.0
@@ -893,7 +1087,8 @@ tab_drag_tool = "ellipse"
 # Optional per-mouse-button drag mapping. These override the flat drag_tool
 # fields above when present. Right/middle default to their built-in behavior
 # unless configured here. Use "default" for a button's built-in behavior.
-# Colors are optional and can be names, #RRGGBB hex strings, or RGB arrays.
+# Colors are optional and can be names, #RRGGBB or #RRGGBBAA hex strings, or
+# RGB/RGBA arrays.
 #
 # [drawing.drag_tools.left]
 # drag_tool = "pen"
@@ -933,7 +1128,7 @@ font_family = "Sans"
 #   font_weight = "bold"      # Bold (default, best visibility)
 #   font_weight = "light"     # Light weight
 #   font_weight = "600"       # Semi-bold (numeric)
-font_weight = "normal"
+font_weight = "bold"
 
 # Font style: "normal", "italic", "oblique"
 # Try different styles:
@@ -952,8 +1147,19 @@ text_background_enabled = false
 # hand, missing shortcut positions use built-in defaults and help-overlay badges
 # follow those shortcut-backed entries. Extra entries have no shortcut action
 # binding. Explicit extra entries appear in toolbar/radial palette UIs, capped
-# to the first 24 rendered colors. Use known color names, #RRGGBB hex, or RGB
-# arrays.
+# to the first 24 rendered colors. Use known color names, #RRGGBB hex (or
+# #RRGGBBAA to carry alpha), or RGB/RGBA arrays. The hex values below are the
+# tuned built-in defaults; named colors ("red", "green", ...) resolve to these
+# same tuned values, so named entries, the default pen color, and board
+# auto-adjust pens all match these swatches.
+#
+# Right-clicking a swatch in the overlay opens the color picker for that slot
+# and saves the accepted color back here as an RGB array, or an RGBA array when
+# the color is translucent, keeping the slot's label and shortcut. Recoloring a
+# slot this file only implies writes the palette out up to that slot, so a
+# palette left out of this file stops tracking future built-in defaults from
+# there on. That picker's "Default" button loads the color shipped for the slot
+# again (built-in slots only), still requiring OK to save.
 [[drawing.quick_colors]]
 label = "Red"
 color = "#F38BA8"
@@ -1021,7 +1227,7 @@ name = "Red pen"
 # "rhombus", "regular-polygon", "freeform-polygon", "arrow", "marker",
 # "highlight", "eraser", "select"
 tool = "pen"
-# Color: name or RGB array
+# Color: name, #RRGGBB or #RRGGBBAA hex string, or RGB/RGBA array
 color = "red"
 # Size: pen thickness or eraser size
 size = 3.0
@@ -1047,12 +1253,12 @@ show_status_bar = true
 # ═══════════════════════════════════════════════════════════════════════════════
 
 [arrow]
-# Arrowhead length in pixels
+# Minimum arrowhead length in pixels. The head also scales with stroke width
+# (three times the thickness), so this acts as the floor for thin strokes.
 length = 20.0
 
-# Arrowhead angle in degrees (15-60)
-# 30 degrees gives a nice balanced arrow
-angle_degrees = 30.0
+# Arrowhead half-angle in degrees (15-60). Smaller is a sharper, narrower head.
+angle_degrees = 26.0
 
 # Place the arrowhead at the end of the line instead of the start
 head_at_end = true
@@ -1060,6 +1266,17 @@ head_at_end = true
 # ═══════════════════════════════════════════════════════════════════════════════
 # PERFORMANCE SETTINGS
 # ═══════════════════════════════════════════════════════════════════════════════
+
+# Spotlight tool: dims the whole overlay except the regions you draw, so
+# attention lands where you point. Select the tool from the toolbar or bind
+# `select_spotlight_tool`.
+[spotlight]
+# How strongly the area outside every spotlight is dimmed (0.1 - 0.95)
+dim_opacity = 0.6
+
+# Fraction of each spotlight radius spent fading out at the edge (0.0 - 0.9).
+# 0.0 gives a hard-edged opening.
+feather = 0.35
 
 [performance]
 # Number of buffers for rendering (2, 3, or 4)
@@ -1070,11 +1287,11 @@ buffer_count = 3
 
 # Enable vsync frame synchronization
 # false lowers drawing latency; true prevents tearing and limits rendering to display refresh rate
-enable_vsync = true
+enable_vsync = false
 
 # Max FPS when VSync is disabled (0 = unlimited)
 # 120 keeps pen latency low without uncapped CPU usage; set to 0 only for profiling
-max_fps_no_vsync = 60
+max_fps_no_vsync = 120
 
 # UI animation frame rate (0-240; 0 = unlimited)
 # Higher values smooth UI effects at the cost of more redraws
@@ -1111,12 +1328,13 @@ custom_redo_steps = 5
 
 [tablet]
 # Enable tablet/stylus input at runtime (set false to opt out)
-enabled = false
+enabled = true
 
-# Map pressure to thickness
+# Map pressure to thickness for pressure-sensitive freehand Pen strokes.
+# Marker/Textmarker, Step Marker, and shape tools keep their selected sizes.
 pressure_enabled = true
 
-# Thickness range for pressure mapping
+# Freehand Pen thickness range for pressure mapping
 min_thickness = 1.0
 max_thickness = 8.0
 
@@ -1175,6 +1393,11 @@ copy_to_clipboard = true
 # When false, clipboard-only captures still auto-exit by default.
 # Use --no-exit-after-capture to keep the overlay open for a run.
 exit_after_capture = false
+
+# Languages used by "Copy text from screen" (OCR), in Tesseract's
+# plus-separated form, for example "eng" or "eng+deu". The matching Tesseract
+# language packages must be installed. OCR also needs `enabled = true` above.
+ocr_languages = "eng"
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # EXPORT SETTINGS

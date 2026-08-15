@@ -75,6 +75,10 @@ return {
         json = { "jq" },
         yaml = prettier_formatter,
         toml = { "taplo" },
+
+        -- LaTeX
+        tex = { "latexindent" },
+        bib = { "bibtex-tidy" },
       },
     },
   },

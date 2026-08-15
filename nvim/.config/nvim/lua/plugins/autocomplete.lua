@@ -29,7 +29,17 @@ return {
             end,
           },
         },
-        opts = {},
+        config = function()
+          local ls = require("luasnip")
+          -- Expands snippet triggers as you type (e.g. `ff` -> `\frac{}{}`)
+          ls.config.setup({ enable_autosnippets = true })
+          -- Expose the `tex` + `latex` snippet sets inside markdown and tex
+          -- buffers (friendly-snippets ships its LaTeX set under `latex`)
+          ls.filetype_extend("markdown", { "tex", "latex" })
+          ls.filetype_extend("tex", { "latex" })
+          -- Obsidian-style math autosnippets, gated on treesitter math detection
+          require("snippets.latex").setup()
+        end,
       },
       "folke/lazydev.nvim",
       -- Must load before blink so ecolog's blink_cmp integration
@@ -40,18 +50,8 @@ return {
     --- @type blink.cmp.Config
     opts = {
       keymap = {
-        -- 'default' (recommended) for mappings similar to built-in completions
-        --   <c-y> to accept ([y]es) the completion.
-        --    This will auto-import if your LSP supports it.
-        --    This will expand snippets if the LSP sent a snippet.
-        -- 'super-tab' for tab to accept
-        -- 'enter' for enter to accept
-        -- 'none' for no mappings
-        --
-        -- For an understanding of why the 'default' preset is recommended,
-        -- you will need to read `:help ins-completion`
-        --
-        -- No, but seriously. Please read `:help ins-completion`, it is really good!
+        -- Read `:help ins-completion`
+        -- default preset: <c-y> to accept ([y]es) the completion
         --
         -- All presets have the following mappings:
         -- <tab>/<s-tab>: move to right/left of your snippet expansion

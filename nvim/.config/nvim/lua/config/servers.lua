@@ -68,6 +68,23 @@ local servers = {
     },
   },
   taplo = {},
+  texlab = {
+    settings = {
+      texlab = {
+        build = {
+          args = { "-pdf", "-interaction=nonstopmode", "-synctex=1", "%f" },
+          executable = "latexmk",
+          forwardSearchAfter = false,
+          onSave = false,
+        },
+        chktex = {
+          onEdit = false,
+          onOpenAndSave = false,
+        },
+        diagnosticsDelay = 300,
+      },
+    },
+  },
   ty = {},
   vimls = {},
   vtsls = {
@@ -97,6 +114,8 @@ vim.list_extend(ensure_installed, {
   "eslint_d", -- Used to lint JavaScript/TypeScript code
   "google-java-format", -- Used to format Java code
   "jq", -- Used to format JSON
+  "latexindent", -- Used to format LaTeX
+  "bibtex-tidy", -- Used to format BibTeX
   "pgformatter", -- Used to format PostgreSQL code
   "prettierd", -- Used to format HTML/CSS, JavaScript/TypeScript code and Markdown and YAML
   "ruff", -- Used to format and lint Python code

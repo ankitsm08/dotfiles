@@ -50,6 +50,8 @@ return {
         -- Docs
         "markdown",
         "markdown_inline",
+        "latex",
+        "bibtex",
         "vimdoc",
 
         -- VCS

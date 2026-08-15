@@ -13,4 +13,32 @@ return {
       })
     end,
   },
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    ft = { "markdown" },
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      { "nvim-tree/nvim-web-devicons", opts = {} },
+    },
+    opts = {
+      heading = {
+        sign = false,
+        icons = {},
+      },
+      code = {
+        sign = false,
+        width = "block",
+        right_pad = 1,
+      },
+      checkbox = {
+        enabled = false,
+      },
+      latex = {
+        enabled = true,
+      },
+      html = {
+        enabled = false,
+      },
+    },
+  },
 }

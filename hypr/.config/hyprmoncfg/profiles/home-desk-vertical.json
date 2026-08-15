@@ -56,11 +56,11 @@
   "workspaces": {
     "enabled": true,
     "strategy": "manual",
-    "max_workspaces": 9,
+    "max_workspaces": 10,
     "group_size": 3,
     "monitor_order": [
-      "au optronics|0x369f",
-      "lg electronics|lg ips qhd|406ntab1g616"
+      "lg electronics|lg ips qhd|406ntab1g616",
+      "au optronics|0x369f"
     ],
     "rules": [
       {
@@ -74,63 +74,54 @@
         "workspace": "2",
         "output_key": "lg electronics|lg ips qhd|406ntab1g616",
         "output_name": "HDMI-A-1",
-        "default": true,
         "persistent": true
       },
       {
         "workspace": "3",
         "output_key": "lg electronics|lg ips qhd|406ntab1g616",
         "output_name": "HDMI-A-1",
-        "default": true,
         "persistent": true
       },
       {
         "workspace": "4",
         "output_key": "lg electronics|lg ips qhd|406ntab1g616",
         "output_name": "HDMI-A-1",
-        "default": true,
         "persistent": true
       },
       {
         "workspace": "5",
-        "output_key": "lg electronics|lg ips qhd|406ntab1g616",
-        "output_name": "HDMI-A-1",
-        "default": true,
+        "output_key": "au optronics|0x369f",
+        "output_name": "eDP-1",
         "persistent": true
       },
       {
         "workspace": "6",
-        "output_key": "lg electronics|lg ips qhd|406ntab1g616",
-        "output_name": "HDMI-A-1",
-        "default": true,
+        "output_key": "au optronics|0x369f",
+        "output_name": "eDP-1",
         "persistent": true
       },
       {
         "workspace": "7",
-        "output_key": "au optronics|0x369f",
-        "output_name": "eDP-1",
-        "default": true,
+        "output_key": "lg electronics|lg ips qhd|406ntab1g616",
+        "output_name": "HDMI-A-1",
         "persistent": true
       },
       {
         "workspace": "8",
-        "output_key": "au optronics|0x369f",
-        "output_name": "eDP-1",
-        "default": true,
+        "output_key": "lg electronics|lg ips qhd|406ntab1g616",
+        "output_name": "HDMI-A-1",
         "persistent": true
       },
       {
         "workspace": "9",
-        "output_key": "au optronics|0x369f",
-        "output_name": "eDP-1",
-        "default": true,
+        "output_key": "lg electronics|lg ips qhd|406ntab1g616",
+        "output_name": "HDMI-A-1",
         "persistent": true
       },
       {
         "workspace": "10",
-        "output_key": "au optronics|0x369f",
-        "output_name": "eDP-1",
-        "default": true,
+        "output_key": "lg electronics|lg ips qhd|406ntab1g616",
+        "output_name": "HDMI-A-1",
         "persistent": true
       }
     ]

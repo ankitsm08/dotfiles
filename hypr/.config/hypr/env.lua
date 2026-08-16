@@ -9,7 +9,6 @@ hl.env("HYPRCURSOR_SIZE", "32")
 -- Force all apps to use Wayland
 hl.env("GDK_BACKEND", "wayland,x11,*")
 hl.env("QT_QPA_PLATFORM", "wayland;xcb")
-hl.env("QT_STYLE_OVERRIDE", "kvantum")
 hl.env("QT_WAYLAND_DISABLE_WINDOWDECORATION", "1")
 hl.env("SDL_VIDEODRIVER", "wayland")
 hl.env("MOZ_ENABLE_WAYLAND", "1")

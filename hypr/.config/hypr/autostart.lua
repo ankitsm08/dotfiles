@@ -17,6 +17,7 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("vicinae server")
   hl.exec_cmd("udiskie -t")
   hl.exec_cmd("wayscriber --daemon")
+  hl.exec_cmd("kdeconnectd")
 
   -- Slow app launch fix -- set systemd vars
   hl.exec_cmd("systemctl --user import-environment $(env | cut -d'=' -f 1)")

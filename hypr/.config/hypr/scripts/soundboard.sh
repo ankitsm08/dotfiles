@@ -111,7 +111,7 @@ LIST_CMD="find . -type f | grep -E '\.(mp3|wav|ogg|flac|m4a)$' | sed 's|^\./||' 
 
 # Run FZF, pointing it to the script handlers
 eval "$LIST_CMD" | fzf \
-  --prompt=" 🎵 Sound ❯ " \
+  --prompt="  Sound ❯ " \
   --info=inline \
   --header="" \
   --border-label=" [ ENTER: Play | SPACE: Stop | CTRL+R: Reload | CTRL+E: Explorer | ESC: Quit ] " \
@@ -119,6 +119,7 @@ eval "$LIST_CMD" | fzf \
   --border=rounded \
   --height=100% \
   --layout=reverse \
+  --cycle \
   $CATPPUCCIN \
   --preview="'$SCRIPT_PATH' --preview {}" \
   --preview-window=right:35%:wrap \

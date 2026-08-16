@@ -1,10 +1,12 @@
 @import "mocha.css";
 
 * {
-  font-size: 13px;
+  font-size: 14px;
   color: @text;
   font-family:
-    "JetBrainsMono NFP", FontAwesome, Roboto, Helvetica, Arial, sans-serif;
+    "JetBrainsMono Nerd Font Propo", FontAwesome, Roboto, Helvetica, Arial,
+    sans-serif;
+  font-weight: 600;
 }
 
 #waybar {
@@ -28,7 +30,7 @@ tooltip {
 }
 
 tooltip label {
-  font-size: 14px;
+  font-size: 16px;
   color: @text;
   font-weight: 500;
   padding: 6px 12px;
@@ -40,8 +42,14 @@ tooltip label {
   background-color: transparent;
 }
 
+#workspaces *,
+#window * {
+  font-family:
+    "Inter", "JetBrainsMono Nerd Font Propo", FontAwesome, Roboto, Helvetica,
+    Arial, sans-serif;
+}
+
 #workspaces button {
-  font-size: 13px;
   background-color: transparent;
   padding: 0 4px;
   border: 1px solid alpha(@lavender, 0.4);
@@ -159,6 +167,10 @@ tooltip label {
   padding: 0 6px;
   color: @text;
   transition: box-shadow 0.2s ease-out;
+  font-family:
+    "Inter", "JetBrainsMono Nerd Font Propo", FontAwesome, Roboto, Helvetica,
+    Arial, sans-serif;
+  font-weight: 600;
 }
 
 #clock:hover {
@@ -330,6 +342,9 @@ tooltip label {
 }
 
 /* --- custom/launcher --- */
+#custom-launcher * {
+  font-size: 16px;
+}
 #custom-launcher {
   margin-left: 1rem;
   margin-right: 0.1rem;
@@ -338,7 +353,6 @@ tooltip label {
   margin: 7px 0 7px 12px;
   background-color: @crust;
   color: @sapphire;
-  font-size: 16px;
   box-shadow: 0 0 2px @sapphire;
 }
 

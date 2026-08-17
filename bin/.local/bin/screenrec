@@ -17,7 +17,7 @@ toggle() {
   if pgrep -x "wl-screenrec" >/dev/null; then
     pkill -INT -x wl-screenrec
     paplay /usr/share/sounds/freedesktop/stereo/message.oga &
-    notify-send -u normal "Screen Recording" "Recording stopped and saved to $RECORD_DIR" -i media-record -e -t 3000
+    notify -u normal -i media-record -e -t 3000 "Screen Recording" "Recording stopped and saved to $RECORD_DIR"
   else
     MONITOR=$(hyprctl monitors -j | jq -r '.[] | select(.focused) | .name')
     FILENAME="$RECORD_DIR/rec_${MONITOR}_$(date +%Y-%m-%d_%H-%M-%S).mp4"

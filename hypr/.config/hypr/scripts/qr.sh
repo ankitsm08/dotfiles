@@ -11,10 +11,10 @@ qr=$(grim -g "$region" -t png - \
 
 # If nothing found, notify and exit
 if [ -z "$qr" ]; then
-  notify-send -r 9992 -e -t 2000 -u normal -i camera-photo "QR Scanner" "No QR code found"
+  notify -r 9992 -e -t 2000 -u normal -i camera-photo "QR Scanner" "No QR code found"
   exit 1
 fi
 
 # Copy to clipboard and notify success
 printf "%s" "$qr" | wl-copy
-notify-send -r 9992 -e -t 3000 -u low -i camera-photo "QR Scanner - Copied to Clipboard" "$qr"
+notify -r 9992 -e -t 3000 -u low -i camera-photo "QR Scanner - Copied to Clipboard" "$qr"

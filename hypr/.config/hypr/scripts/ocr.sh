@@ -21,10 +21,10 @@ text=$(grim -g "$region" -t png - \
 
 # If no text is found, notify and EXIT
 if [ -z "$text" ]; then
-    notify-send -r 9991 -e -t 2000 -u normal -i accessories-character-map "OCR" "No Text Found"
+    notify -r 9991 -e -t 2000 -u normal -i accessories-character-map "OCR" "No Text Found"
     exit 1
 fi
 
 # Copy to clipboard and notify success
 printf "%s" "$text" | wl-copy
-notify-send -r 9991 -e -t 3000 -u low -i accessories-character-map "OCR" "Copied to Clipboard"
+notify -r 9991 -e -t 3000 -u low -i accessories-character-map "OCR" "Copied to Clipboard"

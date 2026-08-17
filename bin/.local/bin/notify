@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+# notify: standardized notify-send wrapper with consistent styling.
+#
+# Accepts the common notify-send flags and normalizes notifications:
+# consistent timeouts, replace-ids and (optionally) action buttons.
+#
+# Usage: notify [-u URGENCY] [-t MS] [-r ID] [-e] [-i ICON] [-a APP]
+#               [--action "LABEL=CMD"] SUMMARY [BODY]
+#
+# --action runs LABEL's CMD when the notification's action is clicked.
+# (Blocks until the notification is dismissed while actions are present.)
+
+set -euo pipefail
+
+NOTIFY_SEND=$(command -v notify-send || true)
+if [[ -z "$NOTIFY_SEND" ]]; then
+  echo "notify: notify-send not found" >&2
+  exit 1
+fi
+
+urgency="normal"
+timeout=""
+replace=""
+icon=""
+app=""
+expire=false
+actions=()
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -u | --urgency) urgency="${2:-normal}"; shift 2 ;;
+    -t | --expire-time) timeout="$2"; shift 2 ;;
+    -r | --replace-id) replace="$2"; shift 2 ;;
+    -i | --icon) icon="$2"; shift 2 ;;
+    -a | --app-name) app="$2"; shift 2 ;;
+    -e) expire=true; shift ;;
+    --action) actions+=("$2"); shift 2 ;;
+    --) shift; break ;;
+    -h | --help)
+      echo "Usage: notify [-u URG] [-t MS] [-r ID] [-e] [-i ICON] [-a APP] [--action 'LABEL=CMD'] SUMMARY [BODY]"
+      exit 0
+      ;;
+    -*) echo "notify: unknown option: $1" >&2; exit 1 ;;
+    *) break ;;
+  esac
+done
+
+summary="${1:-}"
+body="${2:-}"
+[[ -n "$summary" ]] || { echo "notify: summary required" >&2; exit 1; }
+
+args=()
+[[ -n "$urgency" ]] && args+=(-u "$urgency")
+[[ -n "$timeout" ]] && args+=(-t "$timeout")
+[[ -n "$replace" ]] && args+=(-r "$replace")
+[[ -n "$icon" ]] && args+=(-i "$icon")
+[[ -n "$app" ]] && args+=(-a "$app")
+"$expire" && args+=(-e)
+
+if [[ ${#actions[@]} -gt 0 ]]; then
+  declare -A keycmd
+  i=1
+  for a in "${actions[@]}"; do
+    key="action$i"
+    label="${a%%=*}"
+    cmd="${a#*=}"
+    args+=(--action="$key=$label")
+    keycmd["$key"]="$cmd"
+    i=$((i + 1))
+  done
+
+  args+=(--wait)
+  args+=("$summary")
+  [[ -n "$body" ]] && args+=("$body")
+
+  out=$("$NOTIFY_SEND" "${args[@]}" 2>/dev/null || true)
+  if [[ -n "$out" && -n "${keycmd[$out]:-}" ]]; then
+    eval "${keycmd[$out]}"
+  fi
+else
+  args+=("$summary")
+  [[ -n "$body" ]] && args+=("$body")
+  "$NOTIFY_SEND" "${args[@]}"
+fi

@@ -22,21 +22,28 @@ word="$(echo "$word" \
   | tr '[:upper:]' '[:lower:]')"
 
 # Check for empty word or special characters
-[[ -z "$word" || "$word" =~ [\/] ]] && notify-send -h string:bgcolor:#bf616a -t 3000 "Invalid input." && exit 0
+[[ -z "$word" || "$word" =~ [\/] ]] && notify -u normal -t 3000 -i dialog-error "Invalid input." && exit 0
 
-query=$(curl -s --connect-timeout 5 --max-time 10 "https://api.dictionaryapi.dev/api/v2/entries/en_US/$word")
+if ! query=$(curl -fsS \
+    --connect-timeout 5 \
+    --max-time 10 \
+    "https://api.dictionaryapi.dev/api/v2/entries/en_US/$word"
+  ); then
+  notify -u normal -t 5000 -i dialog-error "Dictionary API error."
+  exit 1
+fi
 
 # Check for connection error (curl exit status stored in $?)
-[ $? -ne 0 ] && notify-send -h string:bgcolor:#bf616a -t 3000 "Connection error." && exit 1
+[ $? -ne 0 ] && notify -u normal -t 5000 -i dialog-error "Connection error." && exit 1
 
 # Check for invalid word response
-[[ "$query" == *"No Definitions Found"* ]] && notify-send -h string:bgcolor:#bf616a -t 3000 "Invalid word." && exit 0
+[[ "$query" == *"No Definitions Found"* ]] && notify -u normal -t 3000 -i dialog-error "No Definition found." && exit 0
 
 # Show only first 3 definitions
 def=$(echo "$query" | jq -r '[.[].meanings[] | {pos: .partOfSpeech, def: .definitions[].definition}] | .[:3].[] | "\n\(.pos). \(.def)"')
 
 # Requires a notification daemon to be installed
-notify-send -t 15000 -- "$word" "$def"
+notify -t 15000 -- "$word" "$def"
 
 bold=$(tput bold) # Print text bold with echo, for visual clarity
 normal=$(tput sgr0) # Reset text to normal

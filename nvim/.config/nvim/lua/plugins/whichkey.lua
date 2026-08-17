@@ -55,6 +55,7 @@ return {
         { "<leader>x", group = "Cut fi[X]" },
         { "<leader>q", group = "[Q]uit/Session" },
         { "<leader>r", group = "[R]un" },
+        { "<leader>i", group = "[I]nsert" },
         {
           mode = { "n", "x" },
           {

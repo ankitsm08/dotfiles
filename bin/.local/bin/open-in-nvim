@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# Called by tmux-open:       open-in-nvim -- "<file>"
+# Called by tmux-fzf-links:  open-in-nvim +<line> "<file>"
+
+file=""
+line=""
+
+# Parse arguments dynamically to handle both plugins
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --)
+      # tmux-open format
+      shift
+      file="$1"
+      break
+      ;;
+    +*)
+      # tmux-fzf-links format (extract the line number)
+      line="${1#+}"
+      shift
+      ;;
+    *)
+      # Fallback file assignment
+      file="$1"
+      shift
+      ;;
+  esac
+done
+
+# Fallback: if no file was found, grab the last argument
+[ -z "$file" ] && file="${*: -1}"
+
+sess="$(tmux display-message -p '#{session_name}')"
+
+# Search for nvim panes across the entire session
+pane="$(tmux list-panes -s -t "$sess" -F '#{window_active} #{pane_current_command} #{pane_id}' \
+    | awk '$2 == "nvim" {print $1, $3}' \
+    | sort -r \
+    | head -n1 \
+    | cut -d' ' -f2)"
+
+# Safely escape the file path so Neovim/bash handles spaces correctly
+escaped_file=$(printf "%q" "$file")
+
+if [ -n "$pane" ]; then
+  tmux select-window -t "$pane"
+  tmux select-pane -t "$pane"
+
+  # If a valid line number was provided, jump to it!
+  if [[ -n "$line" && "$line" =~ ^[0-9]+$ ]]; then
+    tmux send-keys -t "$pane" Escape ":e +${line} ${escaped_file}" Enter
+  else
+    tmux send-keys -t "$pane" Escape ":e ${escaped_file}" Enter
+  fi
+else
+  # New window fallback
+  if [[ -n "$line" && "$line" =~ ^[0-9]+$ ]]; then
+    # Neovim shell command takes `+line`
+    tmux new-window -t "$sess" -n nvim "nvim +${line} ${escaped_file}; tmux kill-window"
+  else
+    tmux new-window -t "$sess" -n nvim "nvim ${escaped_file}; tmux kill-window"
+  fi
+fi

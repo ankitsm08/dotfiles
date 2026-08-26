@@ -49,6 +49,13 @@
             }
          }
       },
+      "@DrChai/store.raycast.dictionary": {
+         "entrypoints": {
+            "fromCmd": {
+               "alias": "d"
+            }
+         }
+      },
       "@aurelleb/store.vicinae.dashboard-icons": {
          "entrypoints": {
             "search-icons": {

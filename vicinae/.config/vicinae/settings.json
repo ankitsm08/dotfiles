@@ -12,6 +12,9 @@
    "$schema": "https://vicinae.com/schemas/config.json",
    "close_on_focus_loss": true,
    "pop_to_root_on_close": true,
+   "global_shortcuts": {
+      "toggle": ""
+   },
    "font": {
       "normal": {
          "family": "Inter Variable",
@@ -35,7 +38,8 @@
       },
       "compact_mode": {
          "enabled": true
-      }
+      },
+      "material": "none"
    },
    "favorites": [],
    "providers": {
@@ -211,6 +215,12 @@
             }
          }
       },
+      "calculator": {
+         "enabled": true,
+         "preferences": {
+            "backend": "qalculate"
+         }
+      },
       "clipboard": {
          "entrypoints": {
             "history": {
@@ -233,15 +243,20 @@
          }
       },
       "files": {
+         "enabled": false,
          "preferences": {
-            "autoIndexing": true,
+            "autoIndexing": false,
             "excludedPaths": "*/node_modules;*/.venv;",
             "paths": "/home/ank/dotfiles;/home/ank/dev;/home/ank/lab;/home/ank/dl;/home/ank/docs;",
-            "watcherPaths": ""
+            "watcherPaths": "",
+            "excludedIndexingPaths": [],
+            "indexingPaths": [
+               "/home/ank"
+            ]
          },
          "entrypoints": {
             "search": {
-               "alias": "f"
+               "enabled": false
             }
          }
       },

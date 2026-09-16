@@ -115,7 +115,7 @@ hl.config({
 
     groupbar = {
       font_size = 12,
-      font_family = "JetBrainsMono Nerd Font",
+      font_family = "Inter Display",
       font_weight_active = "ultraheavy",
       font_weight_inactive = "normal",
 

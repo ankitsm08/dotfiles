@@ -21,9 +21,8 @@ while true; do
 
   echo "Updating commit date to: $ISO_DATE"
 
-  # Amend the commit date (custom command for git)
-  # see ~/.gitconfig
-  git cd "$ISO_DATE" --amend --no-edit
+  # Amend the commit date (custom command: ~/.local/bin/git-cd)
+  git-cd "$ISO_DATE" --amend --no-edit
 
   # Attempt to continue the rebase
   echo "Continuing rebase..."

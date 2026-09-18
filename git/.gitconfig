@@ -74,9 +74,6 @@
   gpgsign = true
   sort = -taggerdate
 
-[alias]
-  cd = "!f() { d=\"$1\"; shift; GIT_AUTHOR_DATE=\"$d\" GIT_COMMITTER_DATE=\"$d\" git commit --date=\"$d\" \"$@\"; }; f"
-
 [credential]
   credentialStore = secretservice
   helper = 

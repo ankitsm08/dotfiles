@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# git-cd: commit with a smart relative date.
+# Usage: git cd "<date>" [--amend] [git-commit-args...]
+# Examples:
+#   git cd "Sep 15"            # Sep 15 this year, current time
+#   git cd "3:24:32 pm"        # today at that time
+#   git cd "yesterday 14:00"   # parsed as-is
+#   git cd "2 hours ago"       # parsed as-is
+set -euo pipefail
+
+if [ $# -eq 0 ]; then
+  echo 'usage: git cd "<date>" [git-commit-args...]' >&2
+  echo 'e.g. git cd "Sep 15" / git cd "3:24:32 pm"' >&2
+  exit 1
+fi
+
+input="$1"
+shift
+
+parsed="$(date -d "$input" "+%Y-%m-%dT%H:%M:%S %z")" || exit 1
+
+if [[ "$parsed" == *"T00:00:00 "* ]]; then
+  day="$(date -d "$input" "+%Y-%m-%d")"
+  now_time="$(date "+%H:%M:%S %z")"
+  parsed="${day}T${now_time% *} ${now_time##* }"
+fi
+
+GIT_AUTHOR_DATE="$parsed" GIT_COMMITTER_DATE="$parsed" \
+  exec git commit --date="$parsed" "$@"

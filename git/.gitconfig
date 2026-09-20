@@ -74,6 +74,26 @@
   gpgsign = true
   sort = -taggerdate
 
+[url "https://github.com/"]
+    insteadOf = gh@
+[url "https://gitlab.com/"]
+    insteadOf = gl@
+[url "https://codeberg.org/"]
+    insteadOf = cb@
+[url "https://bitbucket.org/"]
+    insteadOf = bb@
+[url "https://gitea.com/"]
+    insteadOf = gt@
+[url "https://fj.anklab.mywire.org/"]
+    insteadOf = fj@
+
+[url "https://github.com/ankitsm08/"]
+  insteadOf = gh:
+[url "https://gitlab.com/ankitsm08/"]
+  insteadOf = gl:
+[url "https://fj.anklab.mywire.org/ankitsm08/"]
+  insteadOf = fj:
+
 [credential]
   credentialStore = secretservice
   helper = 

@@ -256,13 +256,13 @@ leader-key() {
     $'\C-f') _run_cmd " tmux-sessionizer" ;;
     $'\C-g') _run_cmd " lazygit || git status" ;;
     $'\C-n') _run_cmd " nvim || vim || vi || nano" ;;
-    $'\C-o') _run_cmd " opencode --port" ;;
+    $'\C-o') _run_cmd " opencode" ;;
     c) _run_cmd " cht-enable" ;;
     d) _run_cmd " lazydocker || docker ps" ;;
     f) _run_cmd " tmux-sessionizer" ;;
     g) _run_cmd " lazygit || git status" ;;
     n) _run_cmd " nvim || vim || vi || nano" ;;
-    o) _run_cmd " opencode --port" ;;
+    o) _run_cmd " opencode" ;;
     b) _run_cmd " rbw unlock" ;;
     q) _run_cmd " exit" ;;
     s) _run_cmd " lazyssh" ;;

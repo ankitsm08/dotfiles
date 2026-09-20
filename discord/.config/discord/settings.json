@@ -1,0 +1,15 @@
+{
+  "openH264Enabled": true,
+  "offloadAdmControls": true,
+  "BACKGROUND_COLOR": "#000000",
+  "chromiumSwitches": {},
+  "SKIP_HOST_UPDATE": true,
+  "IS_MAXIMIZED": true,
+  "IS_MINIMIZED": false,
+  "DESKTOP_TTI_UPDATE_BACKOFF_MAX_MS": 10000,
+  "DESKTOP_TTI_DNSTCP_WARMUP": true,
+  "DESKTOP_TTI_EARLY_UPDATE_CHECK": true,
+  "DESKTOP_TTI_REMOVE_V8_CACHE_CLEAR": false,
+  "DESKTOP_TTI_SPLASH_USE_WEBP": true,
+  "DANGEROUS_ENABLE_DEVTOOLS_ONLY_ENABLE_IF_YOU_KNOW_WHAT_YOURE_DOING": true
+}

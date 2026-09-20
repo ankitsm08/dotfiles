@@ -1,0 +1,5 @@
+-S "vcodec:av1,vcodec:h265,vcodec:h264,+vcodec:vp9,res,acodec:m4a"
+--format "bv*[height<=?1440][fps<=?60]+ba/b"
+--merge-output-format mp4
+--cookies-from-browser "firefox:~/.config/zen"
+--extractor-arg "youtube:player_client=default,web"

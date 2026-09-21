@@ -135,7 +135,7 @@
             "gridRows": "3",
             "postProduction": "no",
             "showImageDetails": true,
-            "toggleVicinaeSetting": true,
+            "toggleVicinaeSetting": false,
             "transitionDuration": "3",
             "transitionFPS": "60",
             "transitionStep": "90",

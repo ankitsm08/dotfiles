@@ -29,12 +29,12 @@ hl.bind(super .. control .. "L", hl.dsp.exec_cmd("pkill wlogout || wlogout"))
 hl.bind(
   super .. "W",
   hl.dsp.exec_cmd("vicinae vicinae://launch/@sovereign/store.vicinae.awww-switcher/wpgrid"),
-  { description = "Pick a wallpaper" }
+  { description = "Pick a wallpaper (vicinae)" }
 )
 hl.bind(
   super .. shift .. "W",
   hl.dsp.exec_cmd("vicinae vicinae://launch/@sovereign/store.vicinae.awww-switcher/wprandom"),
-  { description = "Pick a wallpaper" }
+  { description = "Random wallpaper (vicinae)" }
 )
 hl.bind(
   super .. alter .. "W",

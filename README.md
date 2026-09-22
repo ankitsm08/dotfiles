@@ -112,4 +112,6 @@ Read scripts before running them. This repo assumes you know what `stow -D` does
 - If a task repeats, it gets scripted. If a keybind chafes, it gets replaced.
 - Boring technology for the base, experiments at the edges.
 
+## License
 
+[MIT](LICENSE). Take whatever is useful; credit is appreciated but not required.

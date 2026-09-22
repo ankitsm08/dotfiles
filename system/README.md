@@ -1,12 +1,6 @@
 # system/ - machine-wide config (target: `/`, NOT `$HOME`)
 
-This package is special. Everything else in this repo stows to `$HOME` (`stow foo`), but this one stows to `/`:
-
-```bash
-cd ~/dotfiles
-sudo stow -t / system        # deploy
-sudo stow -D -t / system     # undeploy
-```
+This package is special. Everything else in this repo stows to `$HOME`, but this one stows to `/`. Deploy it only through stank (it handles sudo and the target split): `stank deploy system`, `stank undeploy system`.
 
 Contents (mirrors real paths under `/`):
 
@@ -17,8 +11,8 @@ Contents (mirrors real paths under `/`):
 - `etc/mkinitcpio.conf` - shared by both laptops (generic udev-based HOOKS, autodetected per-machine at build time). See note below.
 - `etc/locale.gen` - enables `en_US.UTF-8 UTF-8` (required for locale-gen)
 - `etc/xdg/reflector/reflector.conf` - `--country India --latest 10 --sort rate`
-- `usr/share/sddm/themes/catppuccin-mocha-lavender/` - vendored
-- `usr/share/grub/themes/catppuccin-mocha/` - vendored
+
+Themes (SDDM, GRUB) live in the `sddm-theme/` and `grub-theme/` packages, not here - split per bootloader so each machine deploys only what it needs. Boot-time assets must be REAL files under `/usr/share`: GRUB reads its theme before `/home` is mounted, and the `sddm` greeter user cannot traverse a `0700` home, so symlinks into the repo break both. Both theme packages deploy via copy (`method=copy` in `.stank.conf`), never via stow link.
 
 ## Per-machine notes
 

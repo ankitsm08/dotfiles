@@ -70,8 +70,10 @@ readonly CURRENT_USER="${SUDO_USER:-$USER}"
 # --------------------------------------------------------------------------
 declare -A PKG_TARGET=()   # pkg -> home|root
 declare -A PKG_FOLDING=()  # pkg -> true|false
+declare -A PKG_METHOD=()   # pkg -> stow|copy
 DEFAULT_TARGET="$TARGET_HOME"
 DEFAULT_FOLDING="true"
+DEFAULT_METHOD="stow"
 
 config_load() {
   [[ -f "$CONF_PATH" ]] || return 0
@@ -90,11 +92,13 @@ config_load() {
       case "$key" in
         target)  DEFAULT_TARGET="$value" ;;
         folding) DEFAULT_FOLDING="$value" ;;
+        method)  DEFAULT_METHOD="$value" ;;
       esac
     else
       case "$key" in
         target)  PKG_TARGET["$section"]="$value" ;;
         folding) PKG_FOLDING["$section"]="$value" ;;
+        method)  PKG_METHOD["$section"]="$value" ;;
       esac
     fi
   done < "$CONF_PATH"
@@ -115,6 +119,10 @@ pkg_target_dir() {  # pkg_target_dir <pkg> -> $HOME|/
 
 pkg_folding() {  # pkg_folding <pkg> -> true|false
   echo "${PKG_FOLDING[$1]:-$DEFAULT_FOLDING}"
+}
+
+pkg_method() {  # pkg_method <pkg> -> stow|copy
+  echo "${PKG_METHOD[$1]:-$DEFAULT_METHOD}"
 }
 
 # --------------------------------------------------------------------------
@@ -313,6 +321,214 @@ resolve_conflicts() {  # resolve_conflicts <pkg> <conflicts...> -> 0 proceed / 1
 }
 
 # --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# Copy method - for files that must be REAL on target. Boot-time assets
+# (GRUB/SDDM themes) cannot follow symlinks into /home: GRUB reads them
+# before /home is mounted, and the sddm user cannot traverse a 0700 home.
+#
+# Safety rules, enforced by structure rather than convention:
+#   1. Sync runs per repo directory onto its mirrored target directory.
+#      The package root is never synced onto the target root, so no
+#      single operation can reach outside one owned directory.
+#   2. Nothing is ever deleted on target - except symlinks pointing
+#      into this repo (leftovers from earlier stow deploys). Any other
+#      obstruction is fatal, in dry-run and for real.
+#   3. Dry-run executes nothing: every mutating command runs through the
+#      `run` prefix, which degrades to `echo` when OPT_DRY_RUN is set.
+# --------------------------------------------------------------------------
+copy_deploy() {  # copy_deploy <pkg>
+  local pkg="$1" target_dir
+  local -a priv=() run=() removals=()
+  target_dir="$(pkg_target_dir "$pkg")"
+  [[ "$(pkg_target "$pkg")" == "$TARGET_ROOT" ]] && priv=(sudo)
+  (( OPT_DRY_RUN )) && run=(echo "[dry-run]")
+  run+=("${priv[@]}")
+  log_info "== deploy $pkg (copy -> $target_dir) =="
+
+  require_cmd rsync
+  copy_plan_removals "$pkg" "$target_dir" removals || return 1
+  copy_apply_removals removals run || return 1
+  copy_sync_tree "$pkg" "$target_dir" removals run || return 1
+  copy_sync_root_files "$pkg" "$target_dir" run || return 1
+  log_info "copied $pkg"
+  return 0
+}
+
+# Find stale links (pointing into this repo, or dangling into it) that
+# must go before syncing. Anything else in the way is fatal.
+copy_plan_removals() {  # copy_plan_removals <pkg> <target-dir> <out-array>
+  local pkg="$1" target_dir="$2"
+  local -n planned="$3"
+  local srcdir rel dest link
+
+  while IFS= read -r srcdir; do
+    rel="${srcdir#$REPO_ROOT/$pkg/}"
+
+    case "$rel" in .git*) continue;; esac
+
+    dest="${target_dir%/}/$rel"
+    [[ -L "$dest" ]] || continue
+    link="$(readlink -m "$dest")"
+
+    if [[ "$link" == "$REPO_ROOT/$pkg/"* ]]; then
+      planned+=("$dest")
+    elif [[ "$link" == "$REPO_ROOT/"* && ! -e "$dest" ]]; then
+      log_info "dangling repo link (-> $link)"
+      planned+=("$dest")
+    else
+      log_error "refusing: $dest is a symlink outside the repo"
+      return 1
+    fi
+  done < <(find "$REPO_ROOT/$pkg" -mindepth 1 -type d | sort)
+
+  return 0
+}
+
+copy_apply_removals() {  # copy_apply_removals <removals-array> <run-prefix-array>
+  local -n planned="$1" run_cmd="$2"
+  local dest
+
+  for dest in ${planned[@]+"${planned[@]}"}; do
+    if (( OPT_DRY_RUN )); then
+      log_info "[dry-run] would remove stale link $dest"
+    else
+      log_info "removing stale link $dest"
+    fi
+    "${run_cmd[@]}" rm "$dest" || return 1
+  done
+
+  return 0
+}
+
+# Every ancestor of $1 up to $2 must be a real directory, except links
+# already planned for removal. Syncing through a live link would write
+# outside the intended subtree.
+copy_assert_owned() {  # copy_assert_owned <path> <stop-dir> <removals-array>
+  local path="$1" stop="${2%/}"
+  local -n removal_list="$3"
+  local anc="$path" exempt
+
+  while [[ "$anc" != "$stop" && "$anc" != "/" && "$anc" != "." ]]; do
+    anc="${anc%/*}"
+    [[ -z "$anc" ]] && return 0
+
+    for exempt in ${removal_list[@]+"${removal_list[@]}"}; do
+      [[ "$anc" == "$exempt" ]] && continue 2
+    done
+
+    if [[ -L "$anc" ]]; then
+      log_error "refusing: ancestor $anc of $path is a symlink"
+      return 1
+    fi
+  done
+
+  return 0
+}
+
+copy_sync_tree() {  # copy_sync_tree <pkg> <target-dir> <removals-array> <run-prefix-array>
+  local pkg="$1" target_dir="$2"
+  local -n planned="$3" run_cmd="$4"
+  local srcdir rel dest
+
+  while IFS= read -r srcdir; do
+    rel="${srcdir#$REPO_ROOT/$pkg/}"
+
+    case "$rel" in .git*) continue;; esac
+
+    dest="${target_dir%/}/$rel"
+    copy_assert_owned "$dest" "$target_dir" planned || return 1
+    "${run_cmd[@]}" mkdir -p "$dest" || return 1
+    "${run_cmd[@]}" rsync -a "$srcdir/" "$dest/" || return 1
+  done < <(find "$REPO_ROOT/$pkg" -mindepth 1 -type d | sort)
+
+  return 0
+}
+
+# Files at the package root own no subtree; copy them singly.
+copy_sync_root_files() {  # copy_sync_root_files <pkg> <target-dir> <run-prefix-array>
+  local pkg="$1" target_dir="$2"
+  local -n run_cmd="$3"
+  local srcfile rel dest link
+
+  while IFS= read -r srcfile; do
+    rel="${srcfile#$REPO_ROOT/$pkg/}"
+    dest="${target_dir%/}/$rel"
+
+    if [[ -L "$dest" ]]; then
+      link="$(readlink -m "$dest")"
+      if [[ "$link" == "$REPO_ROOT/"* ]]; then
+        "${run_cmd[@]}" rm "$dest" || return 1
+      else
+        log_error "refusing: $dest is a symlink outside the repo"
+        return 1
+      fi
+    fi
+
+    "${run_cmd[@]}" mkdir -p "${dest%/*}" || return 1
+    "${run_cmd[@]}" rsync -a "$srcfile" "$dest" || return 1
+  done < <(find "$REPO_ROOT/$pkg" -maxdepth 1 -type f | sort)
+
+  return 0
+}
+
+copy_undeploy() {  # copy_undeploy <pkg>
+  local pkg="$1" target_dir file rel dest entry
+  local -a priv=()
+
+  target_dir="$(pkg_target_dir "$pkg")"
+  [[ "$(pkg_target "$pkg")" == "$TARGET_ROOT" ]] && priv=(sudo)
+
+  log_info "== undeploy $pkg (remove copies from $target_dir) =="
+  if (( OPT_DRY_RUN )); then
+    log_info "[dry-run] would remove files mirrored from $pkg"
+    return 0
+  fi
+
+  while IFS= read -r file; do
+    rel="${file#$REPO_ROOT/$pkg/}"
+    is_stow_ignored "$rel" && continue
+
+    [[ -d "$file" && ! -L "$file" ]] && continue
+    dest="$target_dir/$rel"
+
+    if [[ -e "$dest" || -L "$dest" ]]; then
+      "${priv[@]}" rm "$dest" && log_info "removed $rel"
+    fi
+  done < <(find "$REPO_ROOT/$pkg" -mindepth 1 2>/dev/null)
+
+  for entry in "$REPO_ROOT/$pkg"/*; do
+    "${priv[@]}" find "$target_dir/$(basename "$entry")" -depth -type d -empty -delete 2>/dev/null || true
+  done
+
+  log_info "uncopied $pkg"
+}
+
+copy_status() {  # copy_status <pkg>
+  local pkg="$1" target_dir file rel dest ok total
+  target_dir="$(pkg_target_dir "$pkg")"
+  ok=0; total=0
+
+  while IFS= read -r file; do
+    rel="${file#$REPO_ROOT/$pkg/}"
+    is_stow_ignored "$rel" && continue
+
+    [[ -d "$file" && ! -L "$file" ]] && continue
+    total=$((total + 1))
+
+    dest="$target_dir/$rel"
+    [[ -f "$dest" ]] && cmp -s "$file" "$dest" && ok=$((ok + 1))
+  done < <(find "$REPO_ROOT/$pkg" -mindepth 1 2>/dev/null)
+
+  if (( total == 0 )); then
+    printf '%s: nothing deployed\n' "$pkg"
+  elif (( ok == total )); then
+    printf '%s: copied (%d/%d)\n' "$pkg" "$ok" "$total"
+  else
+    printf '%s: STALE (%d/%d)\n' "$pkg" "$ok" "$total"
+  fi
+}
+
+# --------------------------------------------------------------------------
 # Actions
 # --------------------------------------------------------------------------
 action_deploy_like() {  # action_deploy_like <deploy|restow|adopt> <pkgs...>
@@ -323,6 +539,11 @@ action_deploy_like() {  # action_deploy_like <deploy|restow|adopt> <pkgs...>
 
   for pkg in "$@"; do
     pkg_op="$base_op"
+    if [[ "$(pkg_method "$pkg")" == "copy" ]]; then
+      copy_deploy "$pkg" || FAILED=1
+      post_hints "$pkg"
+      continue
+    fi
     folding="$(pkg_folding "$pkg")"
     log_info "== $mode $pkg (target $(pkg_target_dir "$pkg")${folding:+ folding=$folding}) =="
 
@@ -333,6 +554,7 @@ action_deploy_like() {  # action_deploy_like <deploy|restow|adopt> <pkgs...>
       local -a conflicts=()
       if [[ -n "$pkg_op" ]]; then mapfile -t conflicts < <(stow_conflicts "$pkg" "$pkg_op")
       else mapfile -t conflicts < <(stow_conflicts "$pkg"); fi
+
       if (( ${#conflicts[@]} )); then
         resolve_conflicts "$pkg" "${conflicts[@]}" || continue
         if [[ "$RESOLUTION" == "$CHOICE_ADOPT" ]]; then pkg_op="--adopt"; fi
@@ -348,6 +570,10 @@ action_deploy_like() {  # action_deploy_like <deploy|restow|adopt> <pkgs...>
 action_undeploy() {
   local pkg
   for pkg in "$@"; do
+    if [[ "$(pkg_method "$pkg")" == "copy" ]]; then
+      copy_undeploy "$pkg" || FAILED=1
+      continue
+    fi
     log_info "== undeploy $pkg =="
     if run_stow "-D" "$pkg"; then log_info "unstowed $pkg"
     else log_error "failed: $pkg"; FAILED=1; fi
@@ -360,6 +586,9 @@ post_hints() {
     system)
       log_info "hint (grub host only): sudo grub-mkconfig -o /boot/grub/grub.cfg"
       log_info "hint (after mkinitcpio.conf edits): sudo mkinitcpio -P"
+      ;;
+    grub-theme)
+      log_info "hint (grub host only): sudo grub-mkconfig -o /boot/grub/grub.cfg"
       ;;
   esac
 }
@@ -382,6 +611,7 @@ is_stow_ignored() {
 action_status() {
   local pkg file rel target resolved ok total base_dir
   for pkg in "$@"; do
+    if [[ "$(pkg_method "$pkg")" == "copy" ]]; then copy_status "$pkg"; continue; fi
     base_dir="$(pkg_target_dir "$pkg")"
     ok=0; total=0
     while IFS= read -r file; do

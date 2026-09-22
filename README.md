@@ -50,12 +50,14 @@ dotfiles/
   zsh/                 -> ~/.zshrc
   bin/                 -> ~/.local/bin
   system/              -> /  (machine-wide config, see below)
+  sddm-theme/          -> /  (SDDM theme, deployed via copy, not symlink)
+  grub-theme/          -> /  (GRUB theme, deployed via copy; GRUB machines only)
   stank                -> symlink to bin/.local/bin/stank (bootstrap entry point)
   .stank.conf          -> stank configuration
   dev/dev/setup/arch/  -> Arch bootstrap modules (packages, services, fonts)
 ```
 
-`system/` is the exception: it stows to `/`, not `$HOME`. It holds system files that live in `/etc/`. See `system/README.md` for per-machine notes.
+`system/` is the exception: it stows to `/`, not `$HOME`. It holds system files that live in `/etc/`. `sddm-theme/` and `grub-theme/` are further exceptions: vendored GRUB and SDDM themes, split per bootloader so each machine deploys only what it needs, deployed via file copy because boot-time components cannot follow links into `/home`. See `system/README.md` for per-machine notes.
 
 Packages I only partially own track individual files. Everything else tracks whole directories, with secrets and generated files excluded via per-package `.gitignore` files.
 
@@ -79,6 +81,7 @@ How it works:
 - **Targets.** Everything links to `$HOME` except `system`, which links to `/` via `sudo`. The two are never mixed in a single `stow` call.
 - **Folding.** Default is whole-directory links, so new config files land in the repo automatically. `discord` and `gpg` are opted out (`--no-folding`): only the tracked files link, app caches and key material never enter the repo. Configured in `.stank.conf`.
 - **Conflicts.** If a target already exists as a regular file, `stank` asks per package: overwrite (moved aside to `/tmp/stank-<timestamp>/`, never deleted), back up to `.bak`, adopt into the repo, or skip. Overwrite is the default.
+- **Copy method.** `sddm-theme` and `grub-theme` deploy via `rsync` copy instead of symlinks (`method=copy` in `.stank.conf`), because boot-time assets must be real files on target. Deploy adds and overwrites but never deletes; only stale links pointing into the repo are removed. `stank status` compares them byte-for-byte against the repo and reports `copied` or `STALE`.
 - **After sudo.** Repo files touched by privileged runs are `chown`ed back.
 - **Deliberately out of scope.** No commits, no package installs or removals, no kernel/grub rebuilds. It prints reminders for those (`grub-mkconfig` on the GRUB machine, `mkinitcpio -P` after initramfs edits) and stops there.
 

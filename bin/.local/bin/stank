@@ -194,10 +194,16 @@ trash_init() {
 
 trash_move() {  # trash_move <abs-path> - moves aside, prints new location
   local src="$1" dest
+  local -a priv=()
+  # Root targets (e.g. /etc/*) require sudo; $HOME targets do not
+  # Check writability of the parent dir to decide.
+  if [[ ! -w "$(dirname "$src")" ]]; then
+    priv=(sudo)
+  fi
   trash_init
   dest="$TRASH_DIR$src"
   mkdir -p "$(dirname "$dest")"
-  mv "$src" "$dest"
+  "${priv[@]}" mv "$src" "$dest" || return 1
   printf '%s\n' "$dest"
 }
 
@@ -294,16 +300,31 @@ resolve_conflicts() {  # resolve_conflicts <pkg> <conflicts...> -> 0 proceed / 1
   if (( OPT_APPLY_ALL || OPT_ASSUME_YES )); then STICKY_CHOICE="$choice"; fi
 
   local dest
+  local -a priv=()
+  if [[ ! -w "$target_dir" ]]; then
+    priv=(sudo)
+  fi
+  # Dry-run must not mutate - just report what would happen.
+  if (( OPT_DRY_RUN )); then
+    case "$choice" in
+      "$CHOICE_OVERWRITE") for rel in "${conflicts[@]}"; do log_info "[dry-run] would move $rel -> \$TRASH$target_dir/$rel"; done ;;
+      "$CHOICE_BACKUP")    for rel in "${conflicts[@]}"; do log_info "[dry-run] would backup $rel -> $rel.bak"; done ;;
+      "$CHOICE_ADOPT")     log_info "[dry-run] would adopt $pkg (stow --adopt)" ;;
+      *)                   log_info "[dry-run] would skip $pkg" ;;
+    esac
+    RESOLUTION="$choice"
+    return 0
+  fi
   case "$choice" in
     "$CHOICE_OVERWRITE")
       for rel in "${conflicts[@]}"; do
-        dest="$(trash_move "$target_dir/$rel")"
+        dest="$(trash_move "$target_dir/$rel")" || return 1
         log_info "moved $rel -> $dest"
       done
       ;;
     "$CHOICE_BACKUP")
       for rel in "${conflicts[@]}"; do
-        mv "$target_dir/$rel" "$target_dir/$rel.bak"
+        "${priv[@]}" mv "$target_dir/$rel" "$target_dir/$rel.bak" || return 1
         log_info "backed up $rel -> $rel.bak"
       done
       ;;

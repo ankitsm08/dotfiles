@@ -72,6 +72,9 @@
          }
       },
       "@dagimg-dot/store.vicinae.player-pilot": {
+         "preferences": {
+            "playerctl-players": "%any"
+         },
          "entrypoints": {
             "player-pilot": {
                "alias": "p"
@@ -86,6 +89,15 @@
          }
       },
       "@josephschmitt/store.raycast.gif-search": {
+         "preferences": {
+            "defaultAction": "copyFile",
+            "giphyLocale": "en",
+            "gridItemSize": "medium",
+            "gridTrendingItemSize": "medium",
+            "hideFilename": false,
+            "klipyLocale": "en",
+            "maxResults": "20"
+         },
          "entrypoints": {
             "search": {
                "alias": "gif"
@@ -115,6 +127,9 @@
          }
       },
       "@marcjulian/store.raycast.obsidian": {
+         "preferences": {
+            "configFileName": ".obsidian"
+         },
          "entrypoints": {
             "searchNoteCommand": {
                "alias": "ob"
@@ -267,6 +282,15 @@
                   "alwaysShowIntro": true
                }
             }
+         }
+      },
+      "snippets": {
+         "preferences": {
+            "enabled": true,
+            "keyDelay": "2",
+            "layout": "",
+            "prePasteDelay": "0",
+            "undo": true
          }
       },
       "system": {

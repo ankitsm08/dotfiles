@@ -1,0 +1,455 @@
+#!/usr/bin/env bash
+#
+# stank - the one and only interface for managing this dotfiles repo with stow.
+#
+#   stank                              # interactive: fzf pick packages + action
+#   stank deploy <pkg...>              # stow packages
+#   stank undeploy <pkg...>            # stow -D packages
+#   stank restow <pkg...>              # stow -R packages
+#   stank adopt <pkg...>               # stow --adopt packages
+#   stank status [pkg...]              # show what's currently stowed
+#
+#   Flags: --dry-run --all --yes/-y --verbose/-v --help/-h
+#
+set -euo pipefail
+
+# --------------------------------------------------------------------------
+# Constants
+# --------------------------------------------------------------------------
+readonly CONF_NAME=".stank.conf"
+readonly TARGET_HOME="home"
+readonly TARGET_ROOT="root"
+
+readonly ACTION_DEPLOY="deploy"
+readonly ACTION_UNDEPLOY="undeploy"
+readonly ACTION_RESTOW="restow"
+readonly ACTION_ADOPT="adopt"
+readonly ACTION_STATUS="status"
+
+readonly CHOICE_OVERWRITE="overwrite"
+readonly CHOICE_BACKUP="backup"
+readonly CHOICE_ADOPT="adopt"
+readonly CHOICE_SKIP="skip"
+
+# Files stow itself never links (mirrors .stow-global-ignore); status skips them too.
+readonly -a STOW_IGNORED_NAMES=(.gitignore .stow-global-ignore README LICENSE COPYING)
+
+# --------------------------------------------------------------------------
+# Logging
+# --------------------------------------------------------------------------
+log_info()  { printf 'stank: %s\n' "$*"; }
+log_warn()  { printf 'stank: warning: %s\n' "$*" >&2; }
+log_error() { printf 'stank: error: %s\n' "$*" >&2; }
+die()       { log_error "$*"; exit 1; }
+
+require_cmd() {
+  command -v "$1" >/dev/null 2>&1 || die "required command not found: $1"
+}
+
+# --------------------------------------------------------------------------
+# Repo root
+# --------------------------------------------------------------------------
+# Works both as bin/.local/bin/stank and via the ./stank bootstrap symlink.
+find_repo_root() {
+  local resolved dir
+  resolved="$(readlink -f "${BASH_SOURCE[0]}")"
+  dir="$(dirname "$resolved")"
+  if [[ "$dir" == */bin/.local/bin ]]; then
+    (cd "$dir/../../.." && pwd)
+  else
+    (cd "$dir" && pwd)
+  fi
+}
+
+readonly REPO_ROOT="$(find_repo_root)"
+readonly CONF_PATH="$REPO_ROOT/$CONF_NAME"
+readonly CURRENT_USER="${SUDO_USER:-$USER}"
+
+# --------------------------------------------------------------------------
+# Config - parsed once into associative arrays
+# --------------------------------------------------------------------------
+declare -A PKG_TARGET=()   # pkg -> home|root
+declare -A PKG_FOLDING=()  # pkg -> true|false
+DEFAULT_TARGET="$TARGET_HOME"
+DEFAULT_FOLDING="true"
+
+config_load() {
+  [[ -f "$CONF_PATH" ]] || return 0
+  local section="" line key value
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="${line%%#*}"
+    line="$(tr -d '[:space:]' <<<"$line")"
+    [[ -z "$line" ]] && continue
+    if [[ "$line" =~ ^\[(.+)\]$ ]]; then
+      section="${BASH_REMATCH[1]}"
+      continue
+    fi
+    key="${line%%=*}"
+    value="${line#*=}"
+    if [[ "$section" == "defaults" ]]; then
+      case "$key" in
+        target)  DEFAULT_TARGET="$value" ;;
+        folding) DEFAULT_FOLDING="$value" ;;
+      esac
+    else
+      case "$key" in
+        target)  PKG_TARGET["$section"]="$value" ;;
+        folding) PKG_FOLDING["$section"]="$value" ;;
+      esac
+    fi
+  done < "$CONF_PATH"
+}
+
+pkg_target() {  # pkg_target <pkg> -> home|root
+  local pkg="$1"
+  if [[ "${PKG_TARGET[$pkg]:-}" == "/" ]]; then
+    echo "$TARGET_ROOT"
+  else
+    echo "${PKG_TARGET[$pkg]:-$DEFAULT_TARGET}"
+  fi
+}
+
+pkg_target_dir() {  # pkg_target_dir <pkg> -> $HOME|/
+  if [[ "$(pkg_target "$1")" == "$TARGET_ROOT" ]]; then echo "/"; else echo "$HOME"; fi
+}
+
+pkg_folding() {  # pkg_folding <pkg> -> true|false
+  echo "${PKG_FOLDING[$1]:-$DEFAULT_FOLDING}"
+}
+
+# --------------------------------------------------------------------------
+# Packages
+# --------------------------------------------------------------------------
+list_packages() {
+  local d base
+  for d in "$REPO_ROOT"/*/; do
+    [[ -d "$d" ]] || continue
+    base="$(basename "$d")"
+    [[ "$base" == ".git" ]] && continue
+    printf '%s\n' "$base"
+  done | sort
+}
+
+assert_packages_exist() {
+  local pkg
+  for pkg in "$@"; do
+    [[ -d "$REPO_ROOT/$pkg" ]] || die "no such package: $pkg"
+  done
+}
+
+# --------------------------------------------------------------------------
+# Options (parsed into globals)
+# --------------------------------------------------------------------------
+OPT_DRY_RUN=0
+OPT_APPLY_ALL=0
+OPT_ASSUME_YES=0
+OPT_VERBOSE=0
+ACTION=""
+declare -a ACTION_PKGS=()
+STICKY_CHOICE=""
+FAILED=0
+
+parse_args() {
+  local arg
+  for arg in "$@"; do
+    case "$arg" in
+      "$ACTION_DEPLOY"|"$ACTION_UNDEPLOY"|"$ACTION_RESTOW"|"$ACTION_ADOPT"|"$ACTION_STATUS")
+        [[ -n "$ACTION" ]] && die "multiple actions given"
+        ACTION="$arg"
+        ;;
+      --dry-run) OPT_DRY_RUN=1 ;;
+      --all)     OPT_APPLY_ALL=1 ;;
+      --yes|-y)  OPT_ASSUME_YES=1 ;;
+      --verbose|-v) OPT_VERBOSE=1 ;;
+      --help|-h) print_usage; exit 0 ;;
+      -*) die "unknown flag: $arg" ;;
+      *)  ACTION_PKGS+=("$arg") ;;
+    esac
+  done
+}
+
+print_usage() {
+  sed -n '2,/^#$/p' "${BASH_SOURCE[0]}" | sed 's/^# \?//'
+}
+
+# --------------------------------------------------------------------------
+# Trash - overwritten targets are moved aside, never rm'd
+# --------------------------------------------------------------------------
+TRASH_DIR=""
+
+trash_init() {
+  if [[ -z "$TRASH_DIR" ]]; then
+    TRASH_DIR="/tmp/stank-$(date +%s)"
+    mkdir -p "$TRASH_DIR"
+  fi
+}
+
+trash_move() {  # trash_move <abs-path> - moves aside, prints new location
+  local src="$1" dest
+  trash_init
+  dest="$TRASH_DIR$src"
+  mkdir -p "$(dirname "$dest")"
+  mv "$src" "$dest"
+  printf '%s\n' "$dest"
+}
+
+# --------------------------------------------------------------------------
+# Stow primitives
+# --------------------------------------------------------------------------
+stow_base_args() {  # stow_base_args <pkg> - prints: -d ROOT -t TARGET [--no-folding]
+  local pkg="$1"
+  local args=(-d "$REPO_ROOT" -t "$(pkg_target_dir "$pkg")")
+  [[ "$(pkg_folding "$pkg")" == "false" ]] && args+=(--no-folding)
+  printf '%s\n' "${args[@]}"
+}
+
+# Collect conflicting targets for a would-be stow call. Prints rel paths, one per line.
+stow_conflicts() {  # stow_conflicts <pkg> [extra stow args...]
+  local pkg="$1"; shift
+  local -a base
+  mapfile -t base < <(stow_base_args "$pkg")
+  stow --no "${base[@]}" "$@" "$pkg" 2>&1 \
+    | grep -oP 'over existing target \K.*(?= since )' \
+    | sort -u || true
+}
+
+run_stow() {  # run_stow <stow-op> <pkg> [extra args...] - stow-op: ""|-D|-R|--adopt
+  local op="$1" pkg="$2"; shift 2
+  local -a base
+  mapfile -t base < <(stow_base_args "$pkg")
+  local -a cmd=(stow)
+  [[ -n "$op" ]] && cmd+=("$op")
+  cmd+=("${base[@]}" "$@" "$pkg")
+  if (( OPT_VERBOSE )); then cmd+=(--verbose); fi
+
+  local sudo_prefix=()
+  if [[ "$(pkg_target "$pkg")" == "$TARGET_ROOT" ]]; then
+    sudo_prefix=(sudo)
+  fi
+
+  if (( OPT_DRY_RUN )); then
+    log_info "[dry-run] ${sudo_prefix[*]:-} ${cmd[*]}"
+    "${sudo_prefix[@]}" "${cmd[@]}" --no 2>&1 | head -n 5 || true
+    return 0
+  fi
+
+  local stow_status=0
+  "${sudo_prefix[@]}" "${cmd[@]}" || stow_status=$?
+
+  # Privileged runs leave repo files root-owned - hand them back.
+  if (( ${#sudo_prefix[@]} )); then
+    sudo chown -R "$CURRENT_USER:$CURRENT_USER" "$REPO_ROOT/$pkg" || stow_status=$?
+  fi
+  return "$stow_status"
+}
+
+# --------------------------------------------------------------------------
+# Conflict resolution - always asks unless --yes/--all; default is overwrite.
+# Sets RESOLUTION to one of the CHOICE_* constants. Returns 1 on skip.
+# --------------------------------------------------------------------------
+RESOLUTION=""
+
+prompt_choice() {  # prompt_choice <pkg> - interactive fzf menu
+  require_cmd fzf
+  local pkg="$1" picked
+  picked="$(printf '%s\n' \
+      "$CHOICE_OVERWRITE (move aside to trash)" \
+      "$CHOICE_BACKUP (.bak next to target)" \
+      "$CHOICE_ADOPT (move live files into repo)" \
+      "$CHOICE_SKIP package" \
+    | fzf --prompt="$pkg conflict> " --header="default: $CHOICE_OVERWRITE" \
+          --height=8 --select-1 --exit-0)" || return 1
+  picked="${picked%% *}"
+  [[ -z "$picked" ]] && return 1
+  RESOLUTION="$picked"
+  return 0
+}
+
+resolve_conflicts() {  # resolve_conflicts <pkg> <conflicts...> -> 0 proceed / 1 skip
+  local pkg="$1"; shift
+  local -a conflicts=("$@")
+  local target_dir choice rel
+
+  target_dir="$(pkg_target_dir "$pkg")"
+
+  log_warn "conflicts for '$pkg':"
+  for rel in "${conflicts[@]}"; do printf '  !! %s\n' "$rel"; done
+
+  if [[ -n "$STICKY_CHOICE" ]]; then
+    choice="$STICKY_CHOICE"
+  elif (( OPT_ASSUME_YES )); then
+    choice="$CHOICE_OVERWRITE"
+  else
+    prompt_choice "$pkg" || return 1
+    choice="$RESOLUTION"
+  fi
+  if (( OPT_APPLY_ALL || OPT_ASSUME_YES )); then STICKY_CHOICE="$choice"; fi
+
+  local dest
+  case "$choice" in
+    "$CHOICE_OVERWRITE")
+      for rel in "${conflicts[@]}"; do
+        dest="$(trash_move "$target_dir/$rel")"
+        log_info "moved $rel -> $dest"
+      done
+      ;;
+    "$CHOICE_BACKUP")
+      for rel in "${conflicts[@]}"; do
+        mv "$target_dir/$rel" "$target_dir/$rel.bak"
+        log_info "backed up $rel -> $rel.bak"
+      done
+      ;;
+    "$CHOICE_ADOPT")
+      RESOLUTION="$CHOICE_ADOPT"
+      return 0
+      ;;
+    *)
+      log_info "skipped $pkg"
+      return 1
+      ;;
+  esac
+  RESOLUTION="$choice"
+  return 0
+}
+
+# --------------------------------------------------------------------------
+# Actions
+# --------------------------------------------------------------------------
+action_deploy_like() {  # action_deploy_like <deploy|restow|adopt> <pkgs...>
+  local mode="$1"; shift
+  local pkg base_op="--adopt" pkg_op folding
+  [[ "$mode" == "$ACTION_DEPLOY" ]] && base_op=""
+  [[ "$mode" == "$ACTION_RESTOW" ]] && base_op="-R"
+
+  for pkg in "$@"; do
+    pkg_op="$base_op"
+    folding="$(pkg_folding "$pkg")"
+    log_info "== $mode $pkg (target $(pkg_target_dir "$pkg")${folding:+ folding=$folding}) =="
+
+    if [[ "$mode" == "$ACTION_ADOPT" ]]; then
+      if run_stow "--adopt" "$pkg"; then log_info "adopted $pkg"
+      else log_error "failed: $pkg"; FAILED=1; fi
+    else
+      local -a conflicts=()
+      if [[ -n "$pkg_op" ]]; then mapfile -t conflicts < <(stow_conflicts "$pkg" "$pkg_op")
+      else mapfile -t conflicts < <(stow_conflicts "$pkg"); fi
+      if (( ${#conflicts[@]} )); then
+        resolve_conflicts "$pkg" "${conflicts[@]}" || continue
+        if [[ "$RESOLUTION" == "$CHOICE_ADOPT" ]]; then pkg_op="--adopt"; fi
+      fi
+      if run_stow "$pkg_op" "$pkg"; then log_info "stowed $pkg"
+      else log_error "failed: $pkg"; FAILED=1; fi
+    fi
+    post_hints "$pkg"
+    if [[ -n "$TRASH_DIR" ]]; then log_info "trash: $TRASH_DIR"; fi
+  done
+}
+
+action_undeploy() {
+  local pkg
+  for pkg in "$@"; do
+    log_info "== undeploy $pkg =="
+    if run_stow "-D" "$pkg"; then log_info "unstowed $pkg"
+    else log_error "failed: $pkg"; FAILED=1; fi
+  done
+}
+
+# Hints only - stank never rebuilds, uninstalls, or commits.
+post_hints() {
+  case "$1" in
+    system)
+      log_info "hint (grub host only): sudo grub-mkconfig -o /boot/grub/grub.cfg"
+      log_info "hint (after mkinitcpio.conf edits): sudo mkinitcpio -P"
+      ;;
+  esac
+}
+
+# --------------------------------------------------------------------------
+# Status
+# --------------------------------------------------------------------------
+is_stow_ignored() {
+  local rel="$1" filename top ignored
+  [[ "$rel" == .git/* ]] && return 0
+  filename="${rel##*/}"
+  for ignored in "${STOW_IGNORED_NAMES[@]}"; do
+    [[ "$filename" == "$ignored" ]] && return 0
+  done
+  top="${rel%%/*}"
+  case "$top" in README*|LICENSE*|COPYING*) return 0;; esac
+  return 1
+}
+
+action_status() {
+  local pkg file rel target resolved ok total base_dir
+  for pkg in "$@"; do
+    base_dir="$(pkg_target_dir "$pkg")"
+    ok=0; total=0
+    while IFS= read -r file; do
+      rel="${file#$REPO_ROOT/$pkg/}"
+      is_stow_ignored "$rel" && continue
+      [[ -d "$file" ]] && continue
+      total=$((total + 1))
+      target="$base_dir/$rel"
+      resolved="$(readlink -f "$target" 2>/dev/null)" || continue
+      [[ "$resolved" == "$REPO_ROOT/$pkg/"* ]] && ok=$((ok + 1))
+    done < <(find "$REPO_ROOT/$pkg" -mindepth 1 2>/dev/null)
+    if (( total == 0 )); then
+      printf '%s: nothing linkable\n' "$pkg"
+    elif (( ok == total )); then
+      printf '%s: stowed (%d/%d)\n' "$pkg" "$ok" "$total"
+    else
+      printf '%s: PARTIAL (%d/%d)\n' "$pkg" "$ok" "$total"
+    fi
+  done
+}
+
+# --------------------------------------------------------------------------
+# Interactive mode
+# --------------------------------------------------------------------------
+interactive_main() {
+  require_cmd fzf
+  local -a pkgs=()
+  mapfile -t pkgs < <(list_packages | fzf --multi --prompt="packages> " --height=40%)
+  (( ${#pkgs[@]} )) || exit 0
+  local action
+  action="$(printf '%s\n' "$ACTION_DEPLOY" "$ACTION_RESTOW" "$ACTION_UNDEPLOY" "$ACTION_ADOPT" "$ACTION_STATUS" \
+    | fzf --prompt="action> " --height=8 --select-1 --exit-0)" || exit 0
+  ACTION="$action"
+  ACTION_PKGS=("${pkgs[@]}")
+}
+
+# --------------------------------------------------------------------------
+# Main
+# --------------------------------------------------------------------------
+main() {
+  (( EUID != 0 )) || die "don't run stank as root - it invokes sudo itself when needed"
+  require_cmd stow
+  config_load
+  parse_args "$@"
+
+  if [[ -z "$ACTION" ]]; then
+    interactive_main
+  fi
+  [[ -z "$ACTION" ]] && { print_usage; exit 1; }
+
+  if (( ${#ACTION_PKGS[@]} == 0 )); then
+    if [[ "$ACTION" == "$ACTION_STATUS" ]]; then
+      mapfile -t ACTION_PKGS < <(list_packages)
+    else
+      die "no packages given"
+    fi
+  fi
+  assert_packages_exist "${ACTION_PKGS[@]}"
+
+  case "$ACTION" in
+    "$ACTION_DEPLOY"|"$ACTION_RESTOW"|"$ACTION_ADOPT")
+      action_deploy_like "$ACTION" "${ACTION_PKGS[@]}" ;;
+    "$ACTION_UNDEPLOY")
+      action_undeploy "${ACTION_PKGS[@]}" ;;
+    "$ACTION_STATUS")
+      action_status "${ACTION_PKGS[@]}" ;;
+  esac
+  return "$FAILED"
+}
+
+main "$@"

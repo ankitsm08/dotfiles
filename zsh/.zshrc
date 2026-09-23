@@ -6,6 +6,8 @@ source /usr/share/zinit/zinit.zsh
 
 eval "$(starship init zsh)"
 
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+
 # Keybindings
 bindkey -e
 bindkey '^@' leader-key

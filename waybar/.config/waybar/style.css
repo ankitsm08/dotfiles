@@ -119,10 +119,10 @@ tooltip label {
 #custom-voxtype,
 #custom-screenrec {
   margin: 8px 0;
+  border: 1px solid alpha(shade(@lavender, 0.8), 0.2);
   border-radius: 6px;
-  background-color: shade(@surface0, 0.5);
+  background-color: shade(@lavender, 0.1);
   padding: 0 4px;
-  box-shadow: 0 1px 1px alpha(@lavender, 0.35);
 }
 
 /* ========== BUILT-IN MODULES ========== */

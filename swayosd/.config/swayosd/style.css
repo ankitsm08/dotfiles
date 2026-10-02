@@ -54,10 +54,6 @@ window#osd segment {
   margin-left: 4px;
 }
 
-window#osd box {
-  spacing: 4px;
-}
-
 window#osd segment:first-child {
   margin-left: 2px;
 }

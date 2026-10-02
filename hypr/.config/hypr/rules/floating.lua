@@ -8,10 +8,26 @@ hl.window_rule({
 })
 
 hl.window_rule({
+  match = { tag = "fullscreen-window" },
+  float = true,
+  center = true,
+  pin = true,
+  size = { "monitor_w", "monitor_h * 1.05" },
+  border_size = 0,
+})
+
+hl.window_rule({
   match = {
     class = [[(org\.gnome\.NautilusPreviewer|org\.gnome\.Evince|com\.gabm\.satty|imv|mpv|About|TUI\.float|yad)]],
   },
   tag = "+floating-window",
+})
+
+hl.window_rule({
+  match = {
+    class = [[TUI\.fullscreen]],
+  },
+  tag = "+fullscreen-window",
 })
 
 hl.window_rule({

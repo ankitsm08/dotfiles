@@ -25,6 +25,14 @@ hl.bind(
 hl.bind(super .. control .. shift .. "L", hl.dsp.exec_cmd("loginctl lock-session"))
 hl.bind(super .. control .. "L", hl.dsp.exec_cmd("pkill wlogout || wlogout"))
 
+-- Screensaver
+hl.bind(
+  super .. alter .. "L",
+  hl.dsp.exec_cmd(
+    "ghostty --class=TUI.fullscreen --window-padding-x=0 --window-padding-y=0 --font-size=15.5 -e neo-matrix -f 15 -s"
+  )
+)
+
 -- Wallpaper picker/changer
 hl.bind(
   super .. "W",

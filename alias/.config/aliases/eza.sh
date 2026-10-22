@@ -1,8 +1,8 @@
 alias ls='eza --color=auto --hyperlink --group-directories-first'
-alias la='eza --color=auto --hyperlink --group-directories-first -aF'
-alias ll='eza --color=auto --hyperlink -lah --group-directories-first --git --icons=auto'
-alias lS='eza --color=auto --hyperlink -lah --sort=size --group-directories-first --git '
-alias lT='eza --color=auto --hyperlink -lah --sort=modified --group-directories-first --git'
+alias la='eza --color=auto --hyperlink --group-directories-first -a --classify=always'
+alias ll='eza --color=auto --hyperlink -lah --group-directories-first --classify=always --git --icons=auto'
+alias lS='eza --color=auto --hyperlink -lah --sort=size --group-directories-first --classify=always --git '
+alias lT='eza --color=auto --hyperlink -lah --sort=modified --group-directories-first --classify=always --git'
 alias ldot='eza --color=auto --hyperlink -ld .*'
 
 # tree with eza

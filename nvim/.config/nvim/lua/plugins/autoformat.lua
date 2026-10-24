@@ -1,7 +1,7 @@
 -- Conform can also run multiple formatters sequentially
 local ruff_formatter = { "ruff_organize_imports", "ruff_format" }
 -- You can use 'stop_after_first' to run the first available formatter from the list
-local prettier_formatter = { "prettierd", "prettier", stop_after_first = true }
+local prettier_formatter = { "oxfmt", "prettierd", "prettier", stop_after_first = true }
 
 return {
   { -- Autoformat

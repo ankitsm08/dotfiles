@@ -23,8 +23,7 @@ hl.env("XDG_SESSION_DESKTOP", "Hyprland")
 
 -- GTK & qt Dark Theme
 hl.env("GTK_THEME", "catppuccin-mocha-lavender-standard+default")
-hl.env("QT_QPA_PLATFORMTHEME", "hyprqt6engine;qt6ct;qt5ct")
-hl.env("QT_STYLE_OVERRIDE", "kvantum-dark")
+hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
 
 hl.config({
   xwayland = {

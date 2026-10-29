@@ -73,6 +73,7 @@ return {
 
         -- Objects
         json = { "jq" },
+        jsonc = { "jq" },
         yaml = prettier_formatter,
         toml = { "taplo" },
 

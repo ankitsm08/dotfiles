@@ -158,8 +158,10 @@ hl.config({
     anr_missed_pings = 3,
     on_focus_under_fullscreen = 1,
     initial_workspace_tracking = 1, -- 0 - disabled, 1 - single-shot, 2 - persistent (all children too)
-    layers_hog_keyboard_focus = true,
     vrr = true,
+  },
+  layers = {
+    layers_hog_keyboard_focus = true,
   },
 })
 

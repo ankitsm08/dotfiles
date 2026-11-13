@@ -17,7 +17,7 @@ M.audioInterface = floatTerm("wiremix")
 M.networkInterface = floatTerm("impala")
 M.bluetoothInterface = floatTerm("bluetui")
 
-M.fileManager = "thunar"
+M.fileManager = "dolphin"
 
 M.browser = "zen-browser"
 M.browserAlt = "brave"

@@ -10,9 +10,10 @@ hl.window_rule({
 hl.window_rule({
   match = { tag = "fullscreen-window" },
   float = true,
+  fullscreen = true,
+  maximize = false,
   center = true,
-  pin = true,
-  size = { "monitor_w", "monitor_h * 1.05" },
+  size = { "monitor_w * 1.1", "monitor_h * 1.1" },
   border_size = 0,
 })
 

@@ -348,6 +348,7 @@ hl.bind(super .. "mouse_up", hl.dsp.focus({ workspace = "e-1" }))
 -- Fire a drag event only after dragging for more than 10px
 hl.config({
   binds = {
+    allow_pin_fullscreen = true,
     drag_threshold = 4,
   },
 })

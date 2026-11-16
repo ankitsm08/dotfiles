@@ -136,14 +136,10 @@ hl.bind(
 -- ==========================================================
 
 -- Bind 4th mouse button to middle mouse since its more comfortable
-hl.bind("mouse:275", function()
-  hl.timer(function()
-    hl.dispatch(hl.dsp.send_shortcut({ mods = "", key = "mouse:274" }))
-  end, { timeout = 1, type = "oneshot" })
-end, { submap_universal = true })
+hl.bind("mouse:278", hl.dsp.send_shortcut({ mods = "", key = "mouse:274" }), { submap_universal = true })
 
 -- Bind 5th mouse button to open multi-layer submap for mouse actions
-hl.bind("mouse:276", hl.dsp.submap("double-click-submap"), { release = true })
+hl.bind("mouse:277", hl.dsp.submap("double-click-submap"), { release = true })
 
 -- Submaps nicely scope logic in Lua configurations, so you don't need `submap = reset` later.
 hl.define_submap("double-click-submap", function()
@@ -166,36 +162,36 @@ end)
 local specialControlKeys =
   { "A", "B", "C", "D", "E", "F", "G", "N", "P", "R", "T", "U", "V", "W", "X", "Y", "Z", "SPACE", "TAB" }
 for _, key in ipairs(specialControlKeys) do
-  hl.bind(special .. key, function()
-    hl.timer(function()
-      hl.dispatch(hl.dsp.send_shortcut({ mods = "CTRL", key = key:upper() }))
-    end, { timeout = 1, type = "oneshot" })
-  end, { submap_universal = true, repeating = true, transparent = true })
+  hl.bind(
+    special .. key,
+    hl.dsp.send_shortcut({ mods = "CTRL", key = key:upper() }),
+    { submap_universal = true, repeating = true, transparent = true }
+  )
 end
 
 -- Special QOF arrow binds
 local directions = { h = "LEFT", j = "DOWN", k = "UP", l = "RIGHT" }
 for key, dir in pairs(directions) do
-  hl.bind(special .. key, function()
-    hl.timer(function()
-      hl.dispatch(hl.dsp.send_shortcut({ mods = "", key = dir }))
-    end, { timeout = 1, type = "oneshot" })
-  end, { submap_universal = true, repeating = true, transparent = true })
-  hl.bind(special .. shift .. key, function()
-    hl.timer(function()
-      hl.dispatch(hl.dsp.send_shortcut({ mods = "SHIFT", key = dir }))
-    end, { timeout = 1, type = "oneshot" })
-  end, { submap_universal = true, repeating = true, transparent = true })
-  hl.bind(special .. alter .. key, function()
-    hl.timer(function()
-      hl.dispatch(hl.dsp.send_shortcut({ mods = "CTRL", key = dir }))
-    end, { timeout = 1, type = "oneshot" })
-  end, { submap_universal = true, repeating = true, transparent = true })
-  hl.bind(special .. alter .. shift .. key, function()
-    hl.timer(function()
-      hl.dispatch(hl.dsp.send_shortcut({ mods = "CTRL SHIFT", key = dir }))
-    end, { timeout = 1, type = "oneshot" })
-  end, { submap_universal = true, repeating = true, transparent = true })
+  hl.bind(
+    special .. key,
+    hl.dsp.send_shortcut({ mods = "", key = dir }),
+    { submap_universal = true, repeating = true, transparent = true }
+  )
+  hl.bind(
+    special .. shift .. key,
+    hl.dsp.send_shortcut({ mods = "SHIFT", key = dir }),
+    { submap_universal = true, repeating = true, transparent = true }
+  )
+  hl.bind(
+    special .. alter .. key,
+    hl.dsp.send_shortcut({ mods = "CTRL", key = dir }),
+    { submap_universal = true, repeating = true, transparent = true }
+  )
+  hl.bind(
+    special .. alter .. shift .. key,
+    hl.dsp.send_shortcut({ mods = "CTRL SHIFT", key = dir }),
+    { submap_universal = true, repeating = true, transparent = true }
+  )
 end
 
 -- ==========================================================

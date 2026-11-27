@@ -44,6 +44,9 @@ hl.config({
       vibrancy = 0.1696,
     },
   },
+  render = {
+    cm_auto_hdr = false,
+  },
 })
 
 hl.config({
